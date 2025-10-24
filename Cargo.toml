@@ -1,0 +1,15 @@
+[package]
+name = "os-identifier"
+version = "0.1.0"
+authors = ["Tobias Mucke <tobias.mucke@gmail.com>"]
+description = "Resolve product / release names of operating systems used by endoflife.date into canonical names."
+categories = ["value-formatting"]
+keywords = ["os", "endoflife", "label"]
+homepage = "https://github.com/polarlabs"
+documentation = "https://docs.rs/os-identifier/"
+readme = "README.md"
+repository = "https://github.com/polarlabs/os-identifier/"
+license = "MIT OR Apache-2.0"
+edition = "2024"
+
+[dependencies]
