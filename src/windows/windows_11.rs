@@ -1,5 +1,3 @@
-use crate::windows::windows_10::Windows10;
-
 //
 //
 #[derive(Debug)]
@@ -35,62 +33,70 @@ impl TryFrom<&str> for Windows11 {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
 
-        // Ensure at least 2 parts are present
-        if parts.len() < 3 {
-            Err(String::from("This is not a Windows 11."))
-        } else if parts.len() == 3 {
-            match parts[2] {
-                "e" => {
-                    Ok(
-                        Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_e(),
-                            service_channel: ServiceChannel::GAC,
-                        }
-                    )
-                },
-                "iot" => {
-                    Ok(
-                        Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_iot(),
-                            service_channel: ServiceChannel::GAC,
-                        }
-                    )
-                },
-                "w" => {
-                    Ok(
-                        Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_w(),
-                            service_channel: ServiceChannel::GAC,
-                        }
-                    )
-                },
-                _ => Err(String::from("This is not a Windows 11."))
-            }
-        } else if parts.len() == 4 {
-            let editions = Editions::from(parts[2]);
-            let release = Release::from(parts[1]);
-            let service_channel = ServiceChannel::from(parts[3]);
+        if let Some(first) = parts.get(0) {
+            if *first != "11" {
+                Err(String::from("Not Windows 11."))
+            } else {
+                // Ensure at least 2 parts are present
+                if parts.len() < 3 {
+                    Err(String::from("This is not a Windows 11."))
+                } else if parts.len() == 3 {
+                    match parts[2] {
+                        "e" => {
+                            Ok(
+                                Windows11 {
+                                    vendor: "Microsoft".to_string(),
+                                    product: "Windows 11".to_string(),
+                                    release: Release::from(parts[1]),
+                                    editions: Editions::all_e(),
+                                    service_channel: ServiceChannel::GAC,
+                                }
+                            )
+                        },
+                        "iot" => {
+                            Ok(
+                                Windows11 {
+                                    vendor: "Microsoft".to_string(),
+                                    product: "Windows 11".to_string(),
+                                    release: Release::from(parts[1]),
+                                    editions: Editions::all_iot(),
+                                    service_channel: ServiceChannel::GAC,
+                                }
+                            )
+                        },
+                        "w" => {
+                            Ok(
+                                Windows11 {
+                                    vendor: "Microsoft".to_string(),
+                                    product: "Windows 11".to_string(),
+                                    release: Release::from(parts[1]),
+                                    editions: Editions::all_w(),
+                                    service_channel: ServiceChannel::GAC,
+                                }
+                            )
+                        },
+                        _ => Err(String::from("This is not a Windows 11."))
+                    }
+                } else if parts.len() == 4 {
+                    let editions = Editions::from(parts[2]);
+                    let release = Release::from(parts[1]);
+                    let service_channel = ServiceChannel::from(parts[3]);
 
-            Ok(
-                Windows11 {
-                    vendor: "Microsoft".to_string(),
-                    product: "Windows 11".to_string(),
-                    release,
-                    editions,
-                    service_channel,
+                    Ok(
+                        Windows11 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 11".to_string(),
+                            release,
+                            editions,
+                            service_channel,
+                        }
+                    )
+                } else {
+                    Err(String::from("This is not a Windows 11."))
                 }
-            )
+            }
         } else {
-            Err(String::from("This is not a Windows 11."))
+            Err(String::from("This is not Windows 11."))
         }
     }
 }

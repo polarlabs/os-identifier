@@ -1,5 +1,3 @@
-use crate::windows::windows_7::Windows7;
-
 //
 // https://learn.microsoft.com/lifecycle/products/windows-xp
 //
@@ -28,24 +26,32 @@ impl TryFrom<&str> for WindowsXP {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
 
-        // Ensure at least 2 parts are present
-        if parts.len() < 2 {
-            Err(String::from("This is not a Windows XP."))
-        } else {
-            if parts[0] == "5" {
-                let release = Release::try_from(parts[1])?;
-
-                Ok(
-                    WindowsXP {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows XP".to_string(),
-                        release,
-                        editions: Editions::all(),
-                    }
-                )
+        if let Some(first) = parts.get(0) {
+            if *first != "5" {
+                Err(String::from("Not Windows XP."))
             } else {
-                Err(String::from("This is not a Windows XP."))
+                // Ensure at least 2 parts are present
+                if parts.len() < 2 {
+                    Err(String::from("This is not a Windows XP."))
+                } else {
+                    if parts[0] == "5" {
+                        let release = Release::try_from(parts[1])?;
+
+                        Ok(
+                            WindowsXP {
+                                vendor: "Microsoft".to_string(),
+                                product: "Windows XP".to_string(),
+                                release,
+                                editions: Editions::all(),
+                            }
+                        )
+                    } else {
+                        Err(String::from("This is not a Windows XP."))
+                    }
+                }
             }
+        } else {
+            Err(String::from("This is not Windows XP."))
         }
     }
 }

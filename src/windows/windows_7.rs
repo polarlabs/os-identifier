@@ -26,24 +26,32 @@ impl TryFrom<&str> for Windows7 {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
 
-        // Ensure at least 2 parts are present
-        if parts.len() < 2 {
-            Err(String::from("This is not a Windows 7."))
-        } else {
-            if parts[0] == "7" {
-                let release = Release::try_from(parts[1])?;
-
-                Ok(
-                    Windows7 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 7".to_string(),
-                        release,
-                        editions: Editions::all(),
-                    }
-                )
+        if let Some(first) = parts.get(0) {
+            if *first != "7" {
+                Err(String::from("Not Windows 7."))
             } else {
-                Err(String::from("This is not a Windows 7."))
+                // Ensure at least 2 parts are present
+                if parts.len() < 2 {
+                    Err(String::from("This is not a Windows 7."))
+                } else {
+                    if parts[0] == "7" {
+                        let release = Release::try_from(parts[1])?;
+
+                        Ok(
+                            Windows7 {
+                                vendor: "Microsoft".to_string(),
+                                product: "Windows 7".to_string(),
+                                release,
+                                editions: Editions::all(),
+                            }
+                        )
+                    } else {
+                        Err(String::from("This is not a Windows 7."))
+                    }
+                }
             }
+        } else {
+            Err(String::from("This is not a Windows 7."))
         }
     }
 }

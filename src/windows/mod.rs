@@ -48,6 +48,14 @@ impl TryFrom<&str> for Windows {
             Ok(Windows::Windows11(windows))
         } else if let Ok(windows) = Windows10::try_from(value) {
             Ok(Windows::Windows10(windows))
+        } else if let Ok(windows) = Windows8::try_from(value) {
+            Ok(Windows::Windows8(windows))
+        } else if let Ok(windows) = Windows7::try_from(value) {
+            Ok(Windows::Windows7(windows))
+        } else if let Ok(windows) = WindowsVista::try_from(value) {
+            Ok(Windows::WindowsVista(windows))
+        } else if let Ok(windows) = WindowsXP::try_from(value) {
+            Ok(Windows::WindowsXP(windows))
         } else {
             Err(format!("Not a windows: {}", value))
         }

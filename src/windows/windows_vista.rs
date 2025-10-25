@@ -29,24 +29,32 @@ impl TryFrom<&str> for WindowsVista {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
 
-        // Ensure at least 2 parts are present
-        if parts.len() < 2 {
-            Err(String::from("This is not a Windows Vista."))
-        } else {
-            if parts[0] == "6" {
-                let release = Release::try_from(parts[1])?;
-
-                Ok(
-                    WindowsVista {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows Vista".to_string(),
-                        release,
-                        editions: Editions::all(),
-                    }
-                )
+        if let Some(first) = parts.get(0) {
+            if *first != "6" {
+                Err(String::from("Not Windows Vista."))
             } else {
-                Err(String::from("This is not a Windows Vista."))
+                // Ensure at least 2 parts are present
+                if parts.len() < 2 {
+                    Err(String::from("This is not a Windows Vista."))
+                } else {
+                    if parts[0] == "6" {
+                        let release = Release::try_from(parts[1])?;
+
+                        Ok(
+                            WindowsVista {
+                                vendor: "Microsoft".to_string(),
+                                product: "Windows Vista".to_string(),
+                                release,
+                                editions: Editions::all(),
+                            }
+                        )
+                    } else {
+                        Err(String::from("This is not a Windows Vista."))
+                    }
+                }
             }
+        } else {
+            Err(String::from("This is not a Windows Vista."))
         }
     }
 }

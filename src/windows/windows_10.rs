@@ -20,7 +20,14 @@ impl Windows10 {
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self.editions.0
             .iter()
-            .map(|edition| format!("{} {} {edition} {} {}", self.vendor, self.product, self.release, self.service_channel))
+            .map(|edition| {
+                if self.service_channel.is_default() {
+                    format!("{} {} {edition} {}", self.vendor, self.product, self.release)
+                } else {
+                    format!("{} {} {edition} {} {}", self.vendor, self.product, self.release, self.service_channel)
+                }
+
+            })
             .collect();
 
         out
@@ -33,82 +40,90 @@ impl TryFrom<&str> for Windows10 {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
 
-        // Ensure at least 2 parts are present
-        if parts.len() < 2 {
-            Err(String::from("This is not a Windows 10."))
-        } else if parts.len() == 2 {
-            let release = Release::from(parts[1]);
-            let service_channel = ServiceChannel::try_from(&release).unwrap_or_else(
-                |_| parts
-                    .get(3)
-                    .map(|&s| ServiceChannel::from(s))
-                    .unwrap_or_default()
-            );
+        if let Some(first) = parts.get(0) {
+            if *first != "10" {
+                Err(String::from("Not Windows 10."))
+            } else {
 
-            Ok(
-                Windows10 {
-                    vendor: "Microsoft".to_string(),
-                    product: "Windows 10".to_string(),
-                    release,
-                    editions: Editions::all(),
-                    service_channel,
+                // Ensure at least 2 parts are present
+                if parts.len() < 2 {
+                    Err(String::from("This is not a Windows 10."))
+                } else if parts.len() == 2 {
+                    let release = Release::from(parts[1]);
+                    let service_channel = ServiceChannel::try_from(&release).unwrap_or_else(
+                        |_| parts
+                            .get(3)
+                            .map(|&s| ServiceChannel::from(s))
+                            .unwrap_or_default()
+                    );
+
+                    Ok(
+                        Windows10 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 10".to_string(),
+                            release,
+                            editions: Editions::all(),
+                            service_channel,
+                        }
+                    )
+                } else if parts.len() == 3 {
+                    match parts[2] {
+                        "e" => {
+                            Ok(
+                                Windows10 {
+                                    vendor: "Microsoft".to_string(),
+                                    product: "Windows 10".to_string(),
+                                    release: Release::from(parts[1]),
+                                    editions: Editions::all_e(),
+                                    service_channel: ServiceChannel::GAC,
+                                }
+                            )
+                        },
+                        "iot" => {
+                            Ok(
+                                Windows10 {
+                                    vendor: "Microsoft".to_string(),
+                                    product: "Windows 10 IoT Core".to_string(),
+                                    release: Release::from(parts[1]),
+                                    editions: Editions::none(),
+                                    service_channel: ServiceChannel::GAC,
+                                }
+                            )
+                        },
+                        "w" => {
+                            Ok(
+                                Windows10 {
+                                    vendor: "Microsoft".to_string(),
+                                    product: "Windows 10".to_string(),
+                                    release: Release::from(parts[1]),
+                                    editions: Editions::all_w(),
+                                    service_channel: ServiceChannel::GAC,
+                                }
+                            )
+                        },
+                        _ => Err(String::from("This is not a Windows 10."))
+                    }
+                } else if parts.len() == 4 {
+                    let editions = Editions::from(parts[2]);
+                    let release = Release::from(parts[1]);
+                    let service_channel = ServiceChannel::from(parts[3]);
+                    let service_channel = ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
+
+                    Ok(
+                        Windows10 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 10".to_string(),
+                            release,
+                            editions,
+                            service_channel,
+                        }
+                    )
+                } else {
+                    Err(String::from("This is not a Windows 10."))
                 }
-            )
-        } else if parts.len() == 3 {
-            match parts[2] {
-                "e" => {
-                    Ok(
-                        Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_e(),
-                            service_channel: ServiceChannel::GAC,
-                        }
-                    )
-                },
-                "iot" => {
-                    Ok(
-                        Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10 IoT Core".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::none(),
-                            service_channel: ServiceChannel::GAC,
-                        }
-                    )
-                },
-                "w" => {
-                    Ok(
-                        Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_w(),
-                            service_channel: ServiceChannel::GAC,
-                        }
-                    )
-                },
-                _ => Err(String::from("This is not a Windows 10."))
             }
-        } else if parts.len() == 4 {
-            let editions = Editions::from(parts[2]);
-            let release = Release::from(parts[1]);
-            let service_channel = ServiceChannel::from(parts[3]);
-            let service_channel = ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
-
-            Ok(
-                Windows10 {
-                    vendor: "Microsoft".to_string(),
-                    product: "Windows 10".to_string(),
-                    release,
-                    editions,
-                    service_channel,
-                }
-            )
-
         } else {
-            Err(String::from("This is not a Windows 10."))
+            Err(String::from("This is not Windows 10."))
         }
     }
 }
@@ -247,6 +262,15 @@ pub(crate) enum ServiceChannel {
 }
 
 impl ServiceChannel {
+    fn is_default(&self) -> bool {
+        match self {
+            ServiceChannel::GAC => true,
+            ServiceChannel::LTSB => false,
+            ServiceChannel::LTSC => false,
+            ServiceChannel::SAC => true,
+        }
+    }
+
     fn is_lts(&self) -> bool {
         match self {
             ServiceChannel::GAC => false,
@@ -271,7 +295,7 @@ impl std::fmt::Display for ServiceChannel {
             ServiceChannel::LTSC => "LTSC",
             ServiceChannel::SAC => "SAC",
         };
-        
+
         write!(f, "{}", out)
     }
 }
