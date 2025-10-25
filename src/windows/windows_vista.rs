@@ -1,3 +1,6 @@
+use crate::windows::windows_11::Windows11;
+use crate::windows::windows_7::Windows7;
+
 //
 // https://learn.microsoft.com/lifecycle/products/windows-vista
 //
@@ -7,6 +10,17 @@ pub(crate) struct WindowsVista {
     product: String,
     release: Release,
     editions: Editions,
+}
+
+impl WindowsVista {
+    pub(super) fn to_string(&self) -> Vec<String> {
+        let out = self.editions.0
+            .iter()
+            .map(|edition| format!("{} {} {edition} {}", self.vendor, self.product, self.release))
+            .collect();
+
+        out
+    }
 }
 
 impl TryFrom<&str> for WindowsVista {

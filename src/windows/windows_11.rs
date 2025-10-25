@@ -1,3 +1,5 @@
+use crate::windows::windows_10::Windows10;
+
 //
 //
 #[derive(Debug)]
@@ -7,6 +9,24 @@ pub(crate) struct Windows11 {
     release: Release,
     editions: Editions,
     service_channel: ServiceChannel,
+}
+
+impl Windows11 {
+    pub(super) fn to_string(&self) -> Vec<String> {
+        let out = self.editions.0
+            .iter()
+            .map(|edition| {
+                if self.service_channel.is_default() {
+                    format!("{} {} {edition} {}", self.vendor, self.product, self.release)
+
+                } else {
+                    format!("{} {} {edition} {} {}", self.vendor, self.product, self.release, self.service_channel)
+                }
+            })
+            .collect();
+
+        out
+    }
 }
 
 impl TryFrom<&str> for Windows11 {
@@ -191,27 +211,35 @@ impl std::fmt::Display for Edition {
     }
 }
 
-/*
-The primary difference between Current Branch (CB) and Current Branch for Business (CBB) lies in the timing of feature update deployment. CB receives feature updates immediately upon release, making it ideal for pilot testing and early adoption, while CBB receives the same updates approximately four months later, allowing for additional testing and stability validation before broad deployment.
- This staging model ensures that CBB builds have undergone a full servicing window of cumulative updates and real-world testing, enhancing their readiness for enterprise-wide use.
- CBB is available only for Windows 10 Pro and Enterprise editions, whereas CB is the default for Windows 10 Home and optional for Pro and Enterprise.
- Microsoft has since rebranded CBB as the Semi-Annual Channel (SAC) to align with its Office 365 update terminology, but the underlying deployment strategy remains focused on delayed, tested rollouts for business environments.
- 
- */
 #[derive(PartialEq, Debug)]
 pub(crate) enum ServiceChannel {
-    // Current Branch
-    // CB: only used by Windows 10 1507, 1511
-    // Current Branch for Business
-    // CBB: only used by Windows 10 1507, 1511
     GAC,
     LTSC,
-    SAC,
+}
+
+impl ServiceChannel {
+    fn is_default(&self) -> bool {
+        match self {
+            ServiceChannel::GAC => true,
+            ServiceChannel::LTSC => false,
+        }
+    }
 }
 
 impl Default for ServiceChannel {
     fn default() -> Self {
         ServiceChannel::GAC
+    }
+}
+
+impl std::fmt::Display for ServiceChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let out = match self {
+            ServiceChannel::GAC => "GAC",
+            ServiceChannel::LTSC => "LTSC",
+        };
+
+        write!(f, "{}", out)
     }
 }
 

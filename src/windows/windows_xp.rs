@@ -1,3 +1,5 @@
+use crate::windows::windows_7::Windows7;
+
 //
 // https://learn.microsoft.com/lifecycle/products/windows-xp
 //
@@ -7,6 +9,17 @@ pub(crate) struct WindowsXP {
     product: String,
     release: Release,
     editions: Editions,
+}
+
+impl WindowsXP {
+    pub(super) fn to_string(&self) -> Vec<String> {
+        let out = self.editions.0
+            .iter()
+            .map(|edition| format!("{} {} {edition} {}", self.vendor, self.product, self.release))
+            .collect();
+
+        out
+    }
 }
 
 impl TryFrom<&str> for WindowsXP {

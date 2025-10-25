@@ -1,3 +1,5 @@
+use crate::windows::windows_7::Windows7;
+
 //
 // https://learn.microsoft.com/lifecycle/announcements/windows-10-1803-1809-end-of-servicing
 // https://learn.microsoft.com/en-us/lifecycle/announcements/windows-10-1607-end-of-servicing
@@ -12,6 +14,17 @@ pub(crate) struct Windows10 {
     release: Release,
     editions: Editions,
     service_channel: ServiceChannel,
+}
+
+impl Windows10 {
+    pub(super) fn to_string(&self) -> Vec<String> {
+        let out = self.editions.0
+            .iter()
+            .map(|edition| format!("{} {} {edition} {} {}", self.vendor, self.product, self.release, self.service_channel))
+            .collect();
+
+        out
+    }
 }
 
 impl TryFrom<&str> for Windows10 {
@@ -247,6 +260,19 @@ impl ServiceChannel {
 impl Default for ServiceChannel {
     fn default() -> Self {
         ServiceChannel::GAC
+    }
+}
+
+impl std::fmt::Display for ServiceChannel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let out = match self {
+            ServiceChannel::GAC => "GAC",
+            ServiceChannel::LTSB => "LTSB",
+            ServiceChannel::LTSC => "LTSC",
+            ServiceChannel::SAC => "SAC",
+        };
+        
+        write!(f, "{}", out)
     }
 }
 

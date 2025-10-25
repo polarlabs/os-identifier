@@ -11,6 +11,17 @@ pub(crate) struct Windows8 {
     editions: Editions,
 }
 
+impl Windows8 {
+    pub(super) fn to_string(&self) -> Vec<String> {
+        let out = self.editions.0
+            .iter()
+            .map(|edition| format!("{} {} {edition}", self.vendor, self.product))
+            .collect();
+
+        out
+    }
+}
+
 impl TryFrom<&str> for Windows8 {
     type Error = String;
 
