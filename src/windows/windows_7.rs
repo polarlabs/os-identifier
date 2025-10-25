@@ -11,11 +11,18 @@ pub(crate) struct Windows7 {
 
 impl Windows7 {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self.editions.0
+        let out = self
+            .editions
+            .0
             .iter()
-            .map(|edition| format!("{} {} {edition} {}", self.vendor, self.product, self.release))
+            .map(|edition| {
+                format!(
+                    "{} {} {edition} {}",
+                    self.vendor, self.product, self.release
+                )
+            })
             .collect();
-        
+
         out
     }
 }
@@ -37,14 +44,12 @@ impl TryFrom<&str> for Windows7 {
                     if parts[0] == "7" {
                         let release = Release::try_from(parts[1])?;
 
-                        Ok(
-                            Windows7 {
-                                vendor: "Microsoft".to_string(),
-                                product: "Windows 7".to_string(),
-                                release,
-                                editions: Editions::all(),
-                            }
-                        )
+                        Ok(Windows7 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 7".to_string(),
+                            release,
+                            editions: Editions::all(),
+                        })
                     } else {
                         Err(String::from("This is not a Windows 7."))
                     }

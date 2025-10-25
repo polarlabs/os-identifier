@@ -11,9 +11,16 @@ pub(crate) struct WindowsXP {
 
 impl WindowsXP {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self.editions.0
+        let out = self
+            .editions
+            .0
             .iter()
-            .map(|edition| format!("{} {} {edition} {}", self.vendor, self.product, self.release))
+            .map(|edition| {
+                format!(
+                    "{} {} {edition} {}",
+                    self.vendor, self.product, self.release
+                )
+            })
             .collect();
 
         out
@@ -37,14 +44,12 @@ impl TryFrom<&str> for WindowsXP {
                     if parts[0] == "5" {
                         let release = Release::try_from(parts[1])?;
 
-                        Ok(
-                            WindowsXP {
-                                vendor: "Microsoft".to_string(),
-                                product: "Windows XP".to_string(),
-                                release,
-                                editions: Editions::all(),
-                            }
-                        )
+                        Ok(WindowsXP {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows XP".to_string(),
+                            release,
+                            editions: Editions::all(),
+                        })
                     } else {
                         Err(String::from("This is not a Windows XP."))
                     }
@@ -140,7 +145,7 @@ impl std::fmt::Display for Edition {
             Edition::Professional => "Professional",
             Edition::ProfessionalForEmbeddedSystems => "Professional for Embedded Systems",
             Edition::ProfessionalX64 => "Professional x64",
-            Edition::Starter => "Starter"
+            Edition::Starter => "Starter",
         };
 
         write!(f, "{}", out.to_string())

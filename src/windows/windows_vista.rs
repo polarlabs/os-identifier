@@ -11,9 +11,16 @@ pub(crate) struct WindowsVista {
 
 impl WindowsVista {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self.editions.0
+        let out = self
+            .editions
+            .0
             .iter()
-            .map(|edition| format!("{} {} {edition} {}", self.vendor, self.product, self.release))
+            .map(|edition| {
+                format!(
+                    "{} {} {edition} {}",
+                    self.vendor, self.product, self.release
+                )
+            })
             .collect();
 
         out
@@ -37,14 +44,12 @@ impl TryFrom<&str> for WindowsVista {
                     if parts[0] == "6" {
                         let release = Release::try_from(parts[1])?;
 
-                        Ok(
-                            WindowsVista {
-                                vendor: "Microsoft".to_string(),
-                                product: "Windows Vista".to_string(),
-                                release,
-                                editions: Editions::all(),
-                            }
-                        )
+                        Ok(WindowsVista {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows Vista".to_string(),
+                            release,
+                            editions: Editions::all(),
+                        })
                     } else {
                         Err(String::from("This is not a Windows Vista."))
                     }

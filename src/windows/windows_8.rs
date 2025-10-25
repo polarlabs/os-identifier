@@ -11,7 +11,9 @@ pub(crate) struct Windows8 {
 
 impl Windows8 {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self.editions.0
+        let out = self
+            .editions
+            .0
             .iter()
             .map(|edition| format!("{} {} {edition}", self.vendor, self.product))
             .collect();
@@ -25,27 +27,17 @@ impl TryFrom<&str> for Windows8 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            "8" => {
-                Ok(
-                    Windows8 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 8".to_string(),
-                        editions: Editions::all(),
-                    }
-                )
-            },
-            "8.1" => {
-                Ok(
-                    Windows8 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 8.1".to_string(),
-                        editions: Editions::all(),
-                    }
-                )
-            }
-            _ => {
-                Err(String::from("This is not a Windows 8."))
-            }
+            "8" => Ok(Windows8 {
+                vendor: "Microsoft".to_string(),
+                product: "Windows 8".to_string(),
+                editions: Editions::all(),
+            }),
+            "8.1" => Ok(Windows8 {
+                vendor: "Microsoft".to_string(),
+                product: "Windows 8.1".to_string(),
+                editions: Editions::all(),
+            }),
+            _ => Err(String::from("This is not a Windows 8.")),
         }
     }
 }
@@ -62,7 +54,7 @@ impl Editions {
             Edition::ProWithMediaCenter,
             Edition::Professional,
             Edition::ProfessionalN,
-            Edition::SL
+            Edition::SL,
         ])
     }
 
@@ -97,7 +89,7 @@ impl std::fmt::Display for Edition {
             Edition::ProWithMediaCenter => "Pro with Media Center",
             Edition::Professional => "Professional",
             Edition::ProfessionalN => "Professional N",
-            Edition::SL => "SL"
+            Edition::SL => "SL",
         };
 
         write!(f, "{}", out.to_string())

@@ -1,7 +1,7 @@
-mod windows_7;
-mod windows_8;
 mod windows_10;
 mod windows_11;
+mod windows_7;
+mod windows_8;
 mod windows_vista;
 mod windows_xp;
 

@@ -16,15 +16,22 @@ pub(crate) struct Windows10 {
 
 impl Windows10 {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self.editions.0
+        let out = self
+            .editions
+            .0
             .iter()
             .map(|edition| {
                 if self.service_channel.is_default() {
-                    format!("{} {} {edition} {}", self.vendor, self.product, self.release)
+                    format!(
+                        "{} {} {edition} {}",
+                        self.vendor, self.product, self.release
+                    )
                 } else {
-                    format!("{} {} {edition} {} {}", self.vendor, self.product, self.release, self.service_channel)
+                    format!(
+                        "{} {} {edition} {} {}",
+                        self.vendor, self.product, self.release, self.service_channel
+                    )
                 }
-
             })
             .collect();
 
@@ -42,80 +49,64 @@ impl TryFrom<&str> for Windows10 {
             if *first != "10" {
                 Err(String::from("Not Windows 10."))
             } else {
-
                 // Ensure at least 2 parts are present
                 if parts.len() < 2 {
                     Err(String::from("This is not a Windows 10."))
                 } else if parts.len() == 2 {
                     let release = Release::from(parts[1]);
-                    let service_channel = ServiceChannel::try_from(&release).unwrap_or_else(
-                        |_| parts
+                    let service_channel = ServiceChannel::try_from(&release).unwrap_or_else(|_| {
+                        parts
                             .get(3)
                             .map(|&s| ServiceChannel::from(s))
                             .unwrap_or_default()
-                    );
+                    });
 
-                    Ok(
-                        Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10".to_string(),
-                            release,
-                            editions: Editions::all(),
-                            service_channel,
-                        }
-                    )
+                    Ok(Windows10 {
+                        vendor: "Microsoft".to_string(),
+                        product: "Windows 10".to_string(),
+                        release,
+                        editions: Editions::all(),
+                        service_channel,
+                    })
                 } else if parts.len() == 3 {
                     match parts[2] {
-                        "e" => {
-                            Ok(
-                                Windows10 {
-                                    vendor: "Microsoft".to_string(),
-                                    product: "Windows 10".to_string(),
-                                    release: Release::from(parts[1]),
-                                    editions: Editions::all_e(),
-                                    service_channel: ServiceChannel::GAC,
-                                }
-                            )
-                        },
-                        "iot" => {
-                            Ok(
-                                Windows10 {
-                                    vendor: "Microsoft".to_string(),
-                                    product: "Windows 10 IoT Core".to_string(),
-                                    release: Release::from(parts[1]),
-                                    editions: Editions::none(),
-                                    service_channel: ServiceChannel::GAC,
-                                }
-                            )
-                        },
-                        "w" => {
-                            Ok(
-                                Windows10 {
-                                    vendor: "Microsoft".to_string(),
-                                    product: "Windows 10".to_string(),
-                                    release: Release::from(parts[1]),
-                                    editions: Editions::all_w(),
-                                    service_channel: ServiceChannel::GAC,
-                                }
-                            )
-                        },
-                        _ => Err(String::from("This is not a Windows 10."))
+                        "e" => Ok(Windows10 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 10".to_string(),
+                            release: Release::from(parts[1]),
+                            editions: Editions::all_e(),
+                            service_channel: ServiceChannel::GAC,
+                        }),
+                        "iot" => Ok(Windows10 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 10 IoT Core".to_string(),
+                            release: Release::from(parts[1]),
+                            editions: Editions::none(),
+                            service_channel: ServiceChannel::GAC,
+                        }),
+                        "w" => Ok(Windows10 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 10".to_string(),
+                            release: Release::from(parts[1]),
+                            editions: Editions::all_w(),
+                            service_channel: ServiceChannel::GAC,
+                        }),
+                        _ => Err(String::from("This is not a Windows 10.")),
                     }
                 } else if parts.len() == 4 {
                     let editions = Editions::from(parts[2]);
                     let release = Release::from(parts[1]);
                     let service_channel = ServiceChannel::from(parts[3]);
-                    let service_channel = ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
+                    let service_channel =
+                        ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
 
-                    Ok(
-                        Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10".to_string(),
-                            release,
-                            editions,
-                            service_channel,
-                        }
-                    )
+                    Ok(Windows10 {
+                        vendor: "Microsoft".to_string(),
+                        product: "Windows 10".to_string(),
+                        release,
+                        editions,
+                        service_channel,
+                    })
                 } else {
                     Err(String::from("This is not a Windows 10."))
                 }
@@ -130,11 +121,11 @@ impl TryFrom<&str> for Windows10 {
 struct Release(String);
 
 impl Release {
-    fn is_semi_annual(&self) -> bool{
+    fn is_semi_annual(&self) -> bool {
         self.0.ends_with("H1")
     }
 
-    fn up_to_1607(&self) -> bool{
+    fn up_to_1607(&self) -> bool {
         self.0 <= String::from("1607")
     }
 }
@@ -247,7 +238,7 @@ The primary difference between Current Branch (CB) and Current Branch for Busine
  This staging model ensures that CBB builds have undergone a full servicing window of cumulative updates and real-world testing, enhancing their readiness for enterprise-wide use.
  CBB is available only for Windows 10 Pro and Enterprise editions, whereas CB is the default for Windows 10 Home and optional for Pro and Enterprise.
  Microsoft has since rebranded CBB as the Semi-Annual Channel (SAC) to align with its Office 365 update terminology, but the underlying deployment strategy remains focused on delayed, tested rollouts for business environments.
- 
+
  */
 #[derive(PartialEq, Debug)]
 pub(crate) enum ServiceChannel {
@@ -325,7 +316,9 @@ impl TryFrom<&Release> for ServiceChannel {
 impl TryFrom<(&Release, &ServiceChannel)> for ServiceChannel {
     type Error = String;
 
-    fn try_from((release, service_channel): (&Release, &ServiceChannel)) -> Result<Self, Self::Error> {
+    fn try_from(
+        (release, service_channel): (&Release, &ServiceChannel),
+    ) -> Result<Self, Self::Error> {
         if release.is_semi_annual() {
             Ok(ServiceChannel::SAC)
         } else if release.up_to_1607() && service_channel.is_lts() {

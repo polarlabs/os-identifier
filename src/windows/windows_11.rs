@@ -11,14 +11,21 @@ pub(crate) struct Windows11 {
 
 impl Windows11 {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self.editions.0
+        let out = self
+            .editions
+            .0
             .iter()
             .map(|edition| {
                 if self.service_channel.is_default() {
-                    format!("{} {} {edition} {}", self.vendor, self.product, self.release)
-
+                    format!(
+                        "{} {} {edition} {}",
+                        self.vendor, self.product, self.release
+                    )
                 } else {
-                    format!("{} {} {edition} {} {}", self.vendor, self.product, self.release, self.service_channel)
+                    format!(
+                        "{} {} {edition} {} {}",
+                        self.vendor, self.product, self.release, self.service_channel
+                    )
                 }
             })
             .collect();
@@ -42,55 +49,41 @@ impl TryFrom<&str> for Windows11 {
                     Err(String::from("This is not a Windows 11."))
                 } else if parts.len() == 3 {
                     match parts[2] {
-                        "e" => {
-                            Ok(
-                                Windows11 {
-                                    vendor: "Microsoft".to_string(),
-                                    product: "Windows 11".to_string(),
-                                    release: Release::from(parts[1]),
-                                    editions: Editions::all_e(),
-                                    service_channel: ServiceChannel::GAC,
-                                }
-                            )
-                        },
-                        "iot" => {
-                            Ok(
-                                Windows11 {
-                                    vendor: "Microsoft".to_string(),
-                                    product: "Windows 11".to_string(),
-                                    release: Release::from(parts[1]),
-                                    editions: Editions::all_iot(),
-                                    service_channel: ServiceChannel::GAC,
-                                }
-                            )
-                        },
-                        "w" => {
-                            Ok(
-                                Windows11 {
-                                    vendor: "Microsoft".to_string(),
-                                    product: "Windows 11".to_string(),
-                                    release: Release::from(parts[1]),
-                                    editions: Editions::all_w(),
-                                    service_channel: ServiceChannel::GAC,
-                                }
-                            )
-                        },
-                        _ => Err(String::from("This is not a Windows 11."))
+                        "e" => Ok(Windows11 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 11".to_string(),
+                            release: Release::from(parts[1]),
+                            editions: Editions::all_e(),
+                            service_channel: ServiceChannel::GAC,
+                        }),
+                        "iot" => Ok(Windows11 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 11".to_string(),
+                            release: Release::from(parts[1]),
+                            editions: Editions::all_iot(),
+                            service_channel: ServiceChannel::GAC,
+                        }),
+                        "w" => Ok(Windows11 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 11".to_string(),
+                            release: Release::from(parts[1]),
+                            editions: Editions::all_w(),
+                            service_channel: ServiceChannel::GAC,
+                        }),
+                        _ => Err(String::from("This is not a Windows 11.")),
                     }
                 } else if parts.len() == 4 {
                     let editions = Editions::from(parts[2]);
                     let release = Release::from(parts[1]);
                     let service_channel = ServiceChannel::from(parts[3]);
 
-                    Ok(
-                        Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release,
-                            editions,
-                            service_channel,
-                        }
-                    )
+                    Ok(Windows11 {
+                        vendor: "Microsoft".to_string(),
+                        product: "Windows 11".to_string(),
+                        release,
+                        editions,
+                        service_channel,
+                    })
                 } else {
                     Err(String::from("This is not a Windows 11."))
                 }
@@ -136,14 +129,11 @@ impl Editions {
             Edition::Education,
             Edition::Enterprise,
             Edition::EnterpriseMultiSession,
-
         ])
     }
 
     fn all_iot() -> Self {
-        Editions(vec![
-            Edition::IoTEnterprise,
-        ])
+        Editions(vec![Edition::IoTEnterprise])
     }
 
     fn all_w() -> Self {
@@ -174,9 +164,7 @@ impl From<&str> for Editions {
                 Edition::Enterprise,
                 Edition::EnterpriseMultiSession,
             ],
-            "iot" => vec![
-                Edition::IoTEnterprise,
-            ],
+            "iot" => vec![Edition::IoTEnterprise],
             "w" => vec![
                 Edition::Home,
                 Edition::Pro,
