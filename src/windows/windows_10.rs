@@ -1,5 +1,3 @@
-use crate::windows::windows_7::Windows7;
-
 //
 // https://learn.microsoft.com/lifecycle/announcements/windows-10-1803-1809-end-of-servicing
 // https://learn.microsoft.com/en-us/lifecycle/announcements/windows-10-1607-end-of-servicing
@@ -185,10 +183,12 @@ impl Editions {
         Editions(vec![])
     }
 
+    #[allow(dead_code)]
     fn contains(&self, edition: EditionE) -> bool {
         self.0.contains(&edition)
     }
 
+    #[allow(dead_code)]
     fn len(&self) -> usize {
         self.0.len()
     }

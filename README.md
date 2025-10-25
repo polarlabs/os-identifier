@@ -10,7 +10,8 @@ This refers to quite some Windows 11 operating systems, such as
 
 # Supported products
 
-As of 25.10.25 the library supports any release related to the product [Windows](https://endoflife.date/api/v1/products/windows).
+As of 25.10.25 the library supports any release related to the product [Windows](https://endoflife.date/api/v1/products/windows) 
+up to Windows 11 25H2.
 
 # License
 

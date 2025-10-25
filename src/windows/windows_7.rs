@@ -59,6 +59,7 @@ impl TryFrom<&str> for Windows7 {
 #[derive(Debug)]
 enum Release {
     // Original Release
+    #[allow(dead_code)]
     GA,
     // Service Pack 1
     SP1,
@@ -120,10 +121,12 @@ impl Editions {
         ])
     }
 
+    #[allow(dead_code)]
     fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }
 
+    #[allow(dead_code)]
     fn len(&self) -> usize {
         self.0.len()
     }

@@ -1,5 +1,3 @@
-use crate::windows::windows_7::Windows7;
-
 //
 // https://learn.microsoft.com/lifecycle/products/windows-8
 // https://learn.microsoft.com/lifecycle/products/windows-81
@@ -68,10 +66,12 @@ impl Editions {
         ])
     }
 
+    #[allow(dead_code)]
     fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }
 
+    #[allow(dead_code)]
     fn len(&self) -> usize {
         self.0.len()
     }
@@ -106,7 +106,6 @@ impl std::fmt::Display for Edition {
 
 #[cfg(test)]
 mod tests {
-    use crate::windows::windows_xp::WindowsXP;
     use super::*;
 
     #[test]

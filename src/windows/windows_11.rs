@@ -122,6 +122,7 @@ impl std::fmt::Display for Release {
 struct Editions(Vec<Edition>);
 
 impl Editions {
+    #[allow(dead_code)]
     fn all() -> Self {
         let mut editions = Editions::all_e();
         editions.0.append(&mut Editions::all_iot().0);
@@ -134,6 +135,8 @@ impl Editions {
         Editions(vec![
             Edition::Education,
             Edition::Enterprise,
+            Edition::EnterpriseMultiSession,
+
         ])
     }
 
@@ -152,14 +155,12 @@ impl Editions {
         ])
     }
 
-    fn none() -> Self {
-        Editions(vec![])
-    }
-
+    #[allow(dead_code)]
     fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }
 
+    #[allow(dead_code)]
     fn len(&self) -> usize {
         self.0.len()
     }
@@ -171,6 +172,7 @@ impl From<&str> for Editions {
             "e" => vec![
                 Edition::Education,
                 Edition::Enterprise,
+                Edition::EnterpriseMultiSession,
             ],
             "iot" => vec![
                 Edition::IoTEnterprise,
