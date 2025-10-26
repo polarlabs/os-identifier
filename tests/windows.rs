@@ -34,22 +34,6 @@ fn test_windows_10() {
     assert!(canonical_names.contains(&String::from("Microsoft Windows 10 Pro 1809")));
 }
 
-/*
-#[test]
-fn test_windows_10_1507_iot() {
-    use os_identifier::Windows;
-
-    let windows = Windows::try_from("10-1507-iot");
-    println!("Debug: {:?}", windows);
-    assert!(windows.is_ok());
-
-    let windows = windows.unwrap();
-    let canonical_names = windows.to_string();
-    println!("Debug: {:?}", canonical_names);
-    assert!(canonical_names.contains(&String::from("Microsoft Windows 10 IoT Core")));
-}
-*/
-
 #[test]
 fn test_windows_11() {
     use os_identifier::Windows;
