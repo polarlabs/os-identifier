@@ -5,7 +5,8 @@ mod windows_8;
 mod windows_vista;
 mod windows_xp;
 
-//mod windows_server;
+mod windows_server_1709ff;
+
 mod windows_2000;
 
 mod windows_server_2003;
@@ -27,6 +28,7 @@ use windows_8::Windows8;
 use windows_10::Windows10;
 use windows_11::Windows11;
 use windows_2000::Windows2000;
+use windows_server_1709ff::WindowsServer1709ff;
 use windows_server_2003::WindowsServer2003;
 use windows_server_2008::WindowsServer2008;
 use windows_server_2008_r2::WindowsServer2008R2;
@@ -62,6 +64,7 @@ enum WindowsClientOS {
     Windows10(Windows10),
     Windows11(Windows11),
     Windows2000(Windows2000),
+    WindowsServer1709ff(WindowsServer1709ff),
     WindowsServer2003(WindowsServer2003),
     WindowsServer2008(WindowsServer2008),
     WindowsServer2008R2(WindowsServer2008R2),
@@ -81,6 +84,7 @@ impl WindowsClientOS {
             WindowsClientOS::Windows10(windows) => windows.to_string(),
             WindowsClientOS::Windows11(windows) => windows.to_string(),
             WindowsClientOS::Windows2000(windows) => windows.to_string(),
+            WindowsClientOS::WindowsServer1709ff(windows) => windows.to_string(),
             WindowsClientOS::WindowsServer2003(windows) => windows.to_string(),
             WindowsClientOS::WindowsServer2008(windows) => windows.to_string(),
             WindowsClientOS::WindowsServer2008R2(windows) => windows.to_string(),
@@ -126,6 +130,8 @@ impl TryFrom<&str> for WindowsClientOS {
             Ok(WindowsClientOS::WindowsServer2003(windows))
         } else if let Ok(windows) = Windows2000::try_from(value) {
             Ok(WindowsClientOS::Windows2000(windows))
+        } else if let Ok(windows) = WindowsServer1709ff::try_from(value) {
+            Ok(WindowsClientOS::WindowsServer1709ff(windows))
         } else {
             Err(format!("Not a windows: {}", value))
         }

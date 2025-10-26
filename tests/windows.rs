@@ -47,6 +47,32 @@ fn test_windows_11() {
 }
 
 #[test]
+fn test_windows_server_1709() {
+    use os_identifier::Windows;
+
+    let windows = Windows::try_from("1709-sac");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    println!("Debug: {:?}", canonical_names);
+    assert!(canonical_names.contains(&String::from("Microsoft Windows Server Datacenter 1709")));
+}
+
+#[test]
+fn test_windows_server_23h2() {
+    use os_identifier::Windows;
+
+    let windows = Windows::try_from("23h2-ac");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert_eq!(canonical_names.contains(&String::from("Microsoft Windows Server Standard 23H2")), false);
+    assert_eq!(canonical_names.contains(&String::from("Microsoft Windows Server Datacenter 23H2")), true);
+}
+
+#[test]
 fn test_windows_2000() {
     use os_identifier::Windows;
 

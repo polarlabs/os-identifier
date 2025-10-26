@@ -4,7 +4,7 @@ const PRODUCT: &str = "Windows Server";
 const VENDOR: &str = "Microsoft";
 
 #[derive(Debug)]
-pub(crate) struct WindowsServer2019ff {
+pub(crate) struct WindowsServer1709ff {
     vendor: String,
     product: String,
     editions: Editions,
@@ -13,7 +13,7 @@ pub(crate) struct WindowsServer2019ff {
     service_channel: ServiceChannel,
 }
 
-impl WindowsServer2019ff {
+impl WindowsServer1709ff {
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self
             .editions
@@ -39,34 +39,29 @@ impl WindowsServer2019ff {
     }
 }
 
-impl TryFrom<&str> for WindowsServer2019ff {
+impl TryFrom<&str> for WindowsServer1709ff {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
 
-        if let Some(first) = parts.get(0) && let None = parts.get(1) {
-            if ! (*first >= "2019" && *first <= "2999") {
+        if let Some(first) = parts.get(0) && let Some(second) = parts.get(1) {
+            if ! (*first >= "1709" && ( *second == "ac" || *second == "sac" )) {
                 Err(String::from("Not Windows Server."))
             } else {
                 let vendor = VENDOR.to_string();
                 let product = PRODUCT.to_string();
 
-                if parts.len() == 1 {
-                    Ok(WindowsServer2019ff {
+                if parts.len() == 2 {
+                    let service_channel = ServiceChannel::from(parts[1]);
+                    let editions = Editions::from(&service_channel);
+
+                    Ok(WindowsServer1709ff {
                         vendor,
-                        product: format!("{product} {}", first),
-                        editions: Editions::all(),
-                        release: None,
-                        service_channel: ServiceChannel::default(),
-                    })
-                } else if parts.len() == 2 {
-                    Ok(WindowsServer2019ff {
-                        vendor,
-                        product: format!("{product} {}", first),
-                        editions: Editions::all(),
-                        release: Some(Release::from(parts[1])),
-                        service_channel: ServiceChannel::default(),
+                        product,
+                        editions,
+                        release: Some(Release::from(*first)),
+                        service_channel,
                     })
                 } else {
                     Err(String::from("This is not a Windows Server."))
@@ -117,6 +112,18 @@ impl Editions {
     }
 }
 
+impl From<&ServiceChannel> for Editions {
+    fn from(value: &ServiceChannel) -> Self {
+        match value {
+            ServiceChannel::AC => {
+                let edition = Edition::Datacenter;
+                Editions(vec![edition])
+            },
+            ServiceChannel::SAC => Editions::all(),
+        }
+    }
+}
+
 #[derive(PartialEq, Debug)]
 enum Edition {
     Datacenter,
@@ -136,28 +143,31 @@ impl std::fmt::Display for Edition {
 
 #[derive(PartialEq, Debug)]
 pub(crate) enum ServiceChannel {
-    LTSB,
+    AC,
+    SAC,
 }
 
 impl ServiceChannel {
     #[allow(dead_code)]
     fn is_default(&self) -> bool {
         match self {
-            ServiceChannel::LTSB => true,
+            ServiceChannel::SAC => true,
+            ServiceChannel::AC => true,
         }
     }
 }
 
 impl Default for ServiceChannel {
     fn default() -> Self {
-        ServiceChannel::LTSB
+        ServiceChannel::SAC
     }
 }
 
 impl std::fmt::Display for ServiceChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
-            ServiceChannel::LTSB => "LTSB",
+            ServiceChannel::AC => "AC",
+            ServiceChannel::SAC => "SAC",
         };
 
         write!(f, "{}", out)
@@ -167,7 +177,9 @@ impl std::fmt::Display for ServiceChannel {
 impl From<&str> for ServiceChannel {
     fn from(value: &str) -> Self {
         match value {
-            _ => ServiceChannel::LTSB,
+            "ac" => ServiceChannel::AC,
+            "sac" => ServiceChannel::SAC,
+            _ => ServiceChannel::default(),
         }
     }
 }
@@ -177,32 +189,38 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_from_string_2019() {
-        let label = WindowsServer2019ff::try_from("2019").unwrap();
+    fn test_from_string_1709_sac() {
+        let label = WindowsServer1709ff::try_from("1709-sac").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
-        assert_eq!(label.product, "Windows Server 2019".to_string());
+        assert_eq!(label.product, "Windows Server".to_string());
         assert_eq!(label.editions.len(), Editions::all().len());
-        assert!(label.release.is_none());
+        assert_eq!(label.release.unwrap().0, "1709");
+        assert_eq!(label.service_channel, ServiceChannel::SAC);
     }
 
     #[test]
-    fn test_from_string_2022() {
-        let label = WindowsServer2019ff::try_from("2022").unwrap();
+    fn test_from_string_20h2_sac() {
+        let label = WindowsServer1709ff::try_from("20h2-sac").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
-        assert_eq!(label.product, "Windows Server 2022".to_string());
+        assert_eq!(label.product, "Windows Server".to_string());
         assert_eq!(label.editions.len(), Editions::all().len());
-        assert!(label.release.is_none());
+        assert_eq!(label.release.unwrap().0, "20H2");
+        assert_eq!(label.service_channel, ServiceChannel::SAC);
     }
 
     #[test]
-    fn test_from_string_2025() {
-        let label = WindowsServer2019ff::try_from("2025").unwrap();
+    fn test_from_string_23h2_ac() {
+        let label = WindowsServer1709ff::try_from("23h2-ac").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
-        assert_eq!(label.product, "Windows Server 2025".to_string());
-        assert_eq!(label.editions.len(), Editions::all().len());
-        assert!(label.release.is_none());
+        assert_eq!(label.product, "Windows Server".to_string());
+
+        assert_eq!(label.editions.len(), 1);
+        assert!(label.editions.0.contains(&Edition::Datacenter));
+
+        assert_eq!(label.release.unwrap().0, "23H2");
+        assert_eq!(label.service_channel, ServiceChannel::AC);
     }
 }
