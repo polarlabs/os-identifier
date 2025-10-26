@@ -10,8 +10,17 @@ This refers to quite some Windows 11 operating systems, such as
 
 # Supported products
 
-As of 25.10.25 the library supports any release related to the product [Windows](https://endoflife.date/api/v1/products/windows) 
-up to Windows 11 25H2.
+As of 25.10.25 the library supports any release related to these products:
+
+* [Windows](https://endoflife.date/api/v1/products/windows) up to Windows 11 25H2
+* [Windows Server](https://endoflife.date/api/v1/products/windows-server) up to Windows Server 2025.
+
+# Roadmap
+
+* Support other Windows operating systems:
+  * [Windows Embedded](https://endoflife.date/api/v1/products/windows-embedded)
+  * [Windows Nano Server](https://endoflife.date/api/v1/products/windows-nano-server)
+  * [Windows Server Core](https://endoflife.date/api/v1/products/windows-server-core)
 
 # License
 
