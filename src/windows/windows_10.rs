@@ -10,32 +10,48 @@ pub(crate) struct Windows10 {
     vendor: String,
     product: String,
     release: Release,
-    editions: Editions,
+    editions: Option<Editions>,
     service_channel: ServiceChannel,
 }
 
 impl Windows10 {
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
-            .0
-            .iter()
-            .map(|edition| {
-                if self.service_channel.is_default() {
-                    format!(
-                        "{} {} {edition} {}",
-                        self.vendor, self.product, self.release
-                    )
-                } else {
-                    format!(
-                        "{} {} {edition} {} {}",
-                        self.vendor, self.product, self.release, self.service_channel
-                    )
-                }
-            })
-            .collect();
+        if let Some(editions) = &self.editions {
+            let out = editions
+                .0
+                .iter()
+                .map(|edition| {
+                    if self.service_channel.is_default() {
+                        format!(
+                            "{} {} {edition} {}",
+                            self.vendor, self.product, self.release
+                        )
+                    } else {
+                        format!(
+                            "{} {} {edition} {} {}",
+                            self.vendor, self.product, self.release, self.service_channel
+                        )
+                    }
+                })
+                .collect();
 
-        out
+            out
+        } else {
+            let out = if self.service_channel.is_default() {
+                format!(
+                    "{} {} {}",
+                    self.vendor, self.product, self.release
+                )
+            } else {
+                format!(
+                    "{} {} {} {}",
+                    self.vendor, self.product, self.release, self.service_channel
+                )
+            };
+
+            let out = vec![out];
+            out
+        }
     }
 }
 
@@ -65,7 +81,7 @@ impl TryFrom<&str> for Windows10 {
                         vendor: "Microsoft".to_string(),
                         product: "Windows 10".to_string(),
                         release,
-                        editions: Editions::all(),
+                        editions: Some(Editions::all()),
                         service_channel,
                     })
                 } else if parts.len() == 3 {
@@ -74,27 +90,27 @@ impl TryFrom<&str> for Windows10 {
                             vendor: "Microsoft".to_string(),
                             product: "Windows 10".to_string(),
                             release: Release::from(parts[1]),
-                            editions: Editions::all_e(),
+                            editions: Some(Editions::all_e()),
                             service_channel: ServiceChannel::GAC,
                         }),
                         "iot" => Ok(Windows10 {
                             vendor: "Microsoft".to_string(),
                             product: "Windows 10 IoT Core".to_string(),
                             release: Release::from(parts[1]),
-                            editions: Editions::none(),
+                            editions: None,
                             service_channel: ServiceChannel::GAC,
                         }),
                         "w" => Ok(Windows10 {
                             vendor: "Microsoft".to_string(),
                             product: "Windows 10".to_string(),
                             release: Release::from(parts[1]),
-                            editions: Editions::all_w(),
+                            editions: Some(Editions::all_w()),
                             service_channel: ServiceChannel::GAC,
                         }),
                         _ => Err(String::from("This is not a Windows 10.")),
                     }
                 } else if parts.len() == 4 {
-                    let editions = Editions::from(parts[2]);
+                    let editions = Some(Editions::from(parts[2]));
                     let release = Release::from(parts[1]);
                     let service_channel = ServiceChannel::from(parts[3]);
                     let service_channel =
@@ -168,10 +184,6 @@ impl Editions {
             EditionE::ProEducation,
             EditionE::ProForWorkstations,
         ])
-    }
-
-    fn none() -> Self {
-        Editions(vec![])
     }
 
     #[allow(dead_code)]
@@ -341,7 +353,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "22H2".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all().len());
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 
@@ -353,7 +365,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "22H1".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all().len());
         assert_eq!(label.service_channel, ServiceChannel::SAC);
     }
 
@@ -365,7 +377,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "1809".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all_e().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all_e().len());
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 
@@ -377,7 +389,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "1809".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all_w().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all_w().len());
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 
@@ -389,7 +401,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "1809".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all_e().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all_e().len());
         assert_eq!(label.service_channel, ServiceChannel::LTSC);
     }
 
@@ -401,7 +413,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "1607".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all_e().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all_e().len());
         assert_eq!(label.service_channel, ServiceChannel::LTSB);
     }
 
@@ -413,7 +425,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10".to_string());
         assert_eq!(label.release.to_string(), "1507".to_string());
 
-        assert_eq!(label.editions.len(), Editions::all().len());
+        assert_eq!(label.editions.unwrap().len(), Editions::all().len());
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 
@@ -425,7 +437,7 @@ mod tests {
         assert_eq!(label.product, "Windows 10 IoT Core".to_string());
         assert_eq!(label.release.to_string(), "1507".to_string());
 
-        assert_eq!(label.editions.len(), 0);
+        assert!(label.editions.is_none());
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "os-identifier"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Tobias Mucke <tobias.mucke@gmail.com>"]
 description = "Resolve product / release names of operating systems used by endoflife.date into canonical names."
 categories = ["value-formatting"]
