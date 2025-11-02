@@ -1,3 +1,5 @@
+use crate::endoflife::EndOfLifeLabel;
+
 //
 //
 #[derive(Debug)]
@@ -38,58 +40,72 @@ impl TryFrom<&str> for Windows11 {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let parts: Vec<&str> = value.split('-').collect();
-
-        if let Some(first) = parts.get(0) {
-            if *first != "11" {
-                Err(String::from("Not Windows 11."))
-            } else {
-                // Ensure at least 2 parts are present
-                if parts.len() < 3 {
-                    Err(String::from("This is not a Windows 11."))
-                } else if parts.len() == 3 {
-                    match parts[2] {
-                        "e" => Ok(Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_e(),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        "iot" => Ok(Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_iot(),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        "w" => Ok(Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_w(),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        _ => Err(String::from("This is not a Windows 11.")),
-                    }
-                } else if parts.len() == 4 {
-                    let editions = Editions::from(parts[2]);
-                    let release = Release::from(parts[1]);
-                    let service_channel = ServiceChannel::from(parts[3]);
-
-                    Ok(Windows11 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 11".to_string(),
-                        release,
-                        editions,
-                        service_channel,
-                    })
+        if let Ok(label) = EndOfLifeLabel::try_from(value) {
+            if let Some(first) = label.get(0) {
+                if first != "11" {
+                    Err(String::from("Not Windows 11."))
                 } else {
-                    Err(String::from("This is not a Windows 11."))
+                    // Ensure at least 2 parts are present
+                    if label.len() < 3 {
+                        Err(String::from("This is not a Windows 11."))
+                    } else if label.len() == 3 {
+                        match label.get(2) {
+                            Some("e") => Ok(Windows11 {
+                                vendor: "Microsoft".to_string(),
+                                product: "Windows 11".to_string(),
+                                release: Release::from(label.get(1).unwrap()),
+                                editions: Editions::all_e(),
+                                service_channel: ServiceChannel::GAC,
+                            }),
+                            Some("iot") => Ok(Windows11 {
+                                vendor: "Microsoft".to_string(),
+                                product: "Windows 11".to_string(),
+                                release: Release::from(label.get(1).unwrap()),
+                                editions: Editions::all_iot(),
+                                service_channel: ServiceChannel::GAC,
+                            }),
+                            Some("w") => Ok(Windows11 {
+                                vendor: "Microsoft".to_string(),
+                                product: "Windows 11".to_string(),
+                                release: Release::from(label.get(1).unwrap()),
+                                editions: Editions::all_w(),
+                                service_channel: ServiceChannel::GAC,
+                            }),
+                            _ => Err(String::from("This is not a Windows 11.")),
+                        }
+                    } else if label.len() == 4 {
+                        let editions = Editions::from(label.get(2).unwrap());
+                        let release = Release::from(label.get(1).unwrap());
+                        let service_channel = ServiceChannel::from(label.get(3).unwrap());
+
+                        Ok(Windows11 {
+                            vendor: "Microsoft".to_string(),
+                            product: "Windows 11".to_string(),
+                            release,
+                            editions,
+                            service_channel,
+                        })
+                    } else {
+                        Err(String::from("This is not a Windows 11."))
+                    }
                 }
+            } else {
+                Err(String::from("This is not Windows 11."))
             }
         } else {
-            Err(String::from("This is not Windows 11."))
+            let value = RawLabel(value);
+
+            let edition = Edition::try_from(&value)?;
+            let release = Release::try_from(&value)?;
+            let service_channel = ServiceChannel::try_from(&value)?;
+
+            Ok(Windows11 {
+                vendor: "Microsoft".to_string(),
+                product: "Windows 11".to_string(),
+                release,
+                editions: Editions(vec![edition]),
+                service_channel,
+            })
         }
     }
 }
@@ -222,6 +238,15 @@ impl ServiceChannel {
     }
 }
 
+impl From<&str> for ServiceChannel {
+    fn from(value: &str) -> Self {
+        match value {
+            "lts" => ServiceChannel::LTSC,
+            _ => ServiceChannel::GAC,
+        }
+    }
+}
+
 impl Default for ServiceChannel {
     fn default() -> Self {
         ServiceChannel::GAC
@@ -239,11 +264,54 @@ impl std::fmt::Display for ServiceChannel {
     }
 }
 
-impl From<&str> for ServiceChannel {
-    fn from(value: &str) -> Self {
-        match value {
-            "lts" => ServiceChannel::LTSC,
-            _ => ServiceChannel::GAC,
+pub struct RawLabel<'a>(&'a str);
+
+impl<'a> TryFrom<&RawLabel<'a>> for Edition {
+    type Error = String;
+
+    fn try_from(value: &RawLabel<'a>) -> Result<Self, Self::Error> {
+        let value = value.0;
+
+        if crate::util::contains_any_word(value, &["Education"]) {
+            Ok(Edition::Education)
+        } else if crate::util::contains_any_word(value, &["Enterprise Edition", "Enterprise"]) {
+            Ok(Edition::Enterprise)
+        } else if crate::util::contains_any_word(value, &["Home"]) {
+            Ok(Edition::Home)
+        } else if crate::util::contains_any_word(value, &["Professional Edition", "Professional", "Pro"]) {
+            Ok(Edition::Pro)
+        } else {
+            Err(String::from("This is not a Windows 11 Edition."))
+        }
+    }
+}
+
+impl<'a> TryFrom<&RawLabel<'a>> for Release {
+    type Error = String;
+
+    fn try_from(value: &RawLabel<'a>) -> Result<Self, Self::Error> {
+        let value = value.0;
+
+        if crate::util::contains_any_word(value, &["26100"]) {
+            Ok(Release::from("24h2"))
+        } else {
+            Err(String::from("This is not a Windows 11 Release."))
+        }
+    }
+}
+
+impl<'a> TryFrom<&RawLabel<'a>> for ServiceChannel {
+    type Error = String;
+
+    fn try_from(value: &RawLabel<'a>) -> Result<Self, Self::Error> {
+        let value = value.0;
+
+        if crate::util::contains_any_word(value, &["General Availability", "GA"]) {
+            Ok(ServiceChannel::GAC)
+        } else if crate::util::contains_any_word(value, &["LTSC"]) {
+            Ok(ServiceChannel::LTSC)
+        } else {
+            Err(String::from("This is not a Windows 11 Service Channel."))
         }
     }
 }
@@ -297,6 +365,30 @@ mod tests {
         assert_eq!(label.release.to_string(), "24H2".to_string());
 
         assert_eq!(label.editions.len(), Editions::all_w().len());
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary1() {
+        let label = Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "24H2".to_string());
+
+        assert!(label.editions.0.contains(&Edition::Pro));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary2() {
+        let label = Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "24H2".to_string());
+
+        assert!(label.editions.0.contains(&Edition::Enterprise));
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "os-identifier"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Tobias Mucke <tobias.mucke@gmail.com>"]
 description = "Resolve product / release names of operating systems used by endoflife.date into canonical names."
 categories = ["value-formatting"]
@@ -13,3 +13,10 @@ license = "MIT OR Apache-2.0"
 edition = "2024"
 
 [dependencies]
+
+[dependencies.regex]
+version = "1.12.2"
+default-features = false
+
+# unicode: allows to use unicode strings to create regex.
+features = ["unicode"]
