@@ -13,9 +13,9 @@
 //! }
 //! ```
 
-mod endoflife;
+mod model;
+pub use model::Windows;
 
-mod windows;
-pub use windows::Windows;
+mod parser;
 
 mod util;

@@ -1,4 +1,4 @@
-use crate::endoflife::EndOfLifeLabel;
+use crate::parser::endoflife::EndOfLifeLabel;
 
 //
 //
@@ -56,7 +56,7 @@ impl TryFrom<&str> for Windows11 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         if let Ok(label) = EndOfLifeLabel::try_from(value) {
-            crate::endoflife::windows::Windows11Parser::parse(&label)
+            crate::parser::endoflife::windows::Windows11Parser::parse(&label)
         } else {
             let value = RawLabel(value);
 
