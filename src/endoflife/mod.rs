@@ -1,4 +1,4 @@
-mod windows;
+pub(crate) mod windows;
 
 use crate::util;
 

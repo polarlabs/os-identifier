@@ -1,3 +1,26 @@
+# todo:
+
+That sounds like a great project — you're basically building a robust, fuzzy deserializer for operating systems!
+
+This is indeed deserialization-like, but the input is unstructured, inconsistent, and often human-entered, so normal serde won’t help much.
+
+Future Directions
+
+Add fuzzy aliases (“mac”, “osx”, “apple os” → MacOS)
+
+Detect vendor names
+
+Parse distro codenames from a lookup table
+
+Optionally serialize back to canonical form
+
+Add feature flags for heavy dependencies (e.g., fuzzy matching)
+
+
+
+
+
+
 This library resolves product / release names of operating systems used by 
 endoflife.date into canonical names.
 
