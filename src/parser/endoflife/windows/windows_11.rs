@@ -1,7 +1,6 @@
 use crate::model;
 
-use crate::parser::endoflife::EndOfLifeLabel;
-
+use super::super::EndOfLifeLabel;
 
 pub(crate) struct Windows11Parser();
 

@@ -1,14 +1,12 @@
-use crate::parser::endoflife::EndOfLifeLabel;
-
 //
 //
 #[derive(Debug)]
 pub(crate) struct Windows11 {
-    vendor: String,
-    product: String,
-    release: Release,
-    editions: Editions,
-    service_channel: ServiceChannel,
+    pub vendor: String,
+    pub product: String,
+    pub release: Release,
+    pub editions: Editions,
+    pub service_channel: ServiceChannel,
 }
 
 impl Windows11 {
@@ -55,22 +53,11 @@ impl TryFrom<&str> for Windows11 {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        if let Ok(label) = EndOfLifeLabel::try_from(value) {
+        if let Ok(label) = crate::parser::endoflife::EndOfLifeLabel::try_from(value) {
             crate::parser::endoflife::windows::Windows11Parser::parse(&label)
         } else {
-            let value = RawLabel(value);
-
-            let edition = Edition::try_from(&value)?;
-            let release = Release::try_from(&value)?;
-            let service_channel = ServiceChannel::try_from(&value)?;
-
-            Ok(Windows11 {
-                vendor: "Microsoft".to_string(),
-                product: "Windows 11".to_string(),
-                release,
-                editions: Editions(vec![edition]),
-                service_channel,
-            })
+            let label = crate::parser::generic::GenericLabel::from(value);
+            crate::parser::generic::windows::Windows11Parser::parse(&label)
         }
     }
 }
@@ -97,7 +84,7 @@ pub(crate) struct Editions(pub(crate) Vec<Edition>);
 
 impl Editions {
     #[allow(dead_code)]
-    fn contains(&self, edition: Edition) -> bool {
+    pub(crate) fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }
 
@@ -177,60 +164,9 @@ impl std::fmt::Display for ServiceChannel {
     }
 }
 
-pub struct RawLabel<'a>(&'a str);
-
-impl<'a> TryFrom<&RawLabel<'a>> for Edition {
-    type Error = String;
-
-    fn try_from(value: &RawLabel<'a>) -> Result<Self, Self::Error> {
-        let value = value.0;
-
-        if crate::util::contains_any_word(value, &["Education"]) {
-            Ok(Edition::Education)
-        } else if crate::util::contains_any_word(value, &["Enterprise Edition", "Enterprise"]) {
-            Ok(Edition::Enterprise)
-        } else if crate::util::contains_any_word(value, &["Home"]) {
-            Ok(Edition::Home)
-        } else if crate::util::contains_any_word(value, &["Professional Edition", "Professional", "Pro"]) {
-            Ok(Edition::Pro)
-        } else {
-            Err(String::from("This is not a Windows 11 Edition."))
-        }
-    }
-}
-
-impl<'a> TryFrom<&RawLabel<'a>> for Release {
-    type Error = String;
-
-    fn try_from(value: &RawLabel<'a>) -> Result<Self, Self::Error> {
-        let value = value.0;
-
-        if crate::util::contains_any_word(value, &["26100"]) {
-            Ok(Release::from("24h2"))
-        } else {
-            Err(String::from("This is not a Windows 11 Release."))
-        }
-    }
-}
-
-impl<'a> TryFrom<&RawLabel<'a>> for ServiceChannel {
-    type Error = String;
-
-    fn try_from(value: &RawLabel<'a>) -> Result<Self, Self::Error> {
-        let value = value.0;
-
-        if crate::util::contains_any_word(value, &["General Availability", "GA"]) {
-            Ok(ServiceChannel::GAC)
-        } else if crate::util::contains_any_word(value, &["LTSC"]) {
-            Ok(ServiceChannel::LTSC)
-        } else {
-            Err(String::from("This is not a Windows 11 Service Channel."))
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
+    use crate::model;
     use super::*;
 
     #[test]
@@ -283,25 +219,25 @@ mod tests {
 
     #[test]
     fn test_from_string_arbitrary1() {
-        let label = Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+        let label = model::Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
         assert_eq!(label.release.to_string(), "24H2".to_string());
 
-        assert!(label.editions.0.contains(&Edition::Pro));
-        assert_eq!(label.service_channel, ServiceChannel::GAC);
+        assert!(label.editions.contains(model::windows_11::Edition::Pro));
+        assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
     }
 
     #[test]
     fn test_from_string_arbitrary2() {
-        let label = Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+        let label = model::Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
         assert_eq!(label.release.to_string(), "24H2".to_string());
 
-        assert!(label.editions.0.contains(&Edition::Enterprise));
-        assert_eq!(label.service_channel, ServiceChannel::GAC);
+        assert!(label.editions.contains(model::windows_11::Edition::Enterprise));
+        assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
     }
 }
