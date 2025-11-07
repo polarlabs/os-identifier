@@ -33,6 +33,12 @@ pub fn contains_any_word(haystack: &str, words: &[&str]) -> bool {
     re.is_match(haystack)
 }
 
+pub fn find_number_with_digits(input: &str, digits: usize) -> Option<String> {
+    let pattern = format!(r"\b\d{{{}}}\b", digits);
+    let re = Regex::new(&pattern).unwrap();
+    re.find(input).map(|m| m.as_str().to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -64,5 +70,21 @@ mod tests {
 
         assert_eq!(contains_any_word(label1, &word), false);
         assert_eq!(contains_any_word(label2, &word), false);
+    }
+
+    #[test]
+    fn test_find_number_with_digits_some() {
+        let label1 = "Windows 11 Professional Edition 26100";
+        let label2 = "Windows 11 Professional Edition 26100.4533";
+
+        assert_eq!(find_number_with_digits(label1, 5), Some(String::from("26100")));
+        assert_eq!(find_number_with_digits(label2, 5), Some(String::from("26100")));
+    }
+
+    #[test]
+    fn test_find_number_with_digits_none() {
+        let label1 = "Windows 11 Professional Edition 26100";
+
+        assert_eq!(find_number_with_digits(label1, 4), None);
     }
 }

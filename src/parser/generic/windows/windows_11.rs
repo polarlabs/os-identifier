@@ -32,9 +32,15 @@ impl<'a> TryFrom<&GenericLabel<'a>> for Release {
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
         let value = value.raw;
 
-        if crate::util::contains_any_word(value, &["26100"]) {
-            Ok(Release::from("24h2"))
+        // Look for a build number
+        if let Some(build) = crate::util::find_number_with_digits(value, 5) {
+            super::resolve_build_to_release(build.as_str())
+                .map_or_else(
+                    |_e| Err(String::from(ERR_UNKNOWN_RELEASE)),
+                    |release| Ok(Release::from(release.as_str()))
+                )
         } else {
+            // todo: look for a release name
             Err(String::from(ERR_UNKNOWN_RELEASE))
         }
     }
