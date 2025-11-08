@@ -14,12 +14,10 @@ impl Windows11Parser {
                 if label.len() < 3 {
                     Err(String::from("This is not a Windows 11."))
                 } else if label.len() == 3 {
-                    let vendor = "Microsoft".to_string();
-                    let product = "Windows 11".to_string();
                     let release = model::windows_11::Release::from(label.get(1).unwrap());
                     let service_channel = model::windows_11::ServiceChannel::GAC;
 
-                    let windows = model::Windows11::build(vendor, product, release, service_channel);
+                    let windows = model::Windows11::build(release, service_channel);
 
                     match label.get(2) {
                         Some("e") => Ok(windows.editions(crate::model::windows_11::Editions::all_e())),
@@ -28,12 +26,10 @@ impl Windows11Parser {
                         _ => Err(String::from("This is not a Windows 11.")),
                     }
                 } else if label.len() == 4 {
-                    let vendor = "Microsoft".to_string();
-                    let product = "Windows 11".to_string();
                     let release = crate::model::windows_11::Release::from(label.get(1).unwrap());
                     let service_channel = crate::model::windows_11::ServiceChannel::from(label.get(3).unwrap());
 
-                    let windows = model::Windows11::build(vendor, product, release, service_channel);
+                    let windows = model::Windows11::build(release, service_channel);
 
                     Ok(windows.editions(model::windows_11::Editions::from(label.get(2).unwrap())))
                 } else {

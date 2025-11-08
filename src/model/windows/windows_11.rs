@@ -1,19 +1,20 @@
-//
-//
+const VENDOR: &str = "Microsoft";
+const PRODUCT: &str = "Windows 11";
+
 #[derive(Debug)]
 pub(crate) struct Windows11 {
-    pub vendor: String,
-    pub product: String,
-    pub release: Release,
-    pub editions: Editions,
-    pub service_channel: ServiceChannel,
+    vendor: String,
+    product: String,
+    release: Release,
+    editions: Editions,
+    service_channel: ServiceChannel,
 }
 
 impl Windows11 {
-    pub(crate) fn build(vendor: String, product: String, release: Release, service_channel: ServiceChannel) -> Windows11 {
+    pub(crate) fn build(release: Release, service_channel: ServiceChannel) -> Windows11 {
         Windows11 {
-            vendor,
-            product,
+            vendor: VENDOR.to_string(),
+            product: PRODUCT.to_string(),
             release,
             editions: Editions(vec![]),
             service_channel,
@@ -64,8 +65,6 @@ impl TryFrom<&str> for Windows11 {
 
 #[derive(Debug)]
 pub(crate) struct Release(String);
-
-impl Release {}
 
 impl From<&str> for Release {
     fn from(value: &str) -> Self {
@@ -239,5 +238,29 @@ mod tests {
 
         assert!(label.editions.contains(model::windows_11::Edition::Enterprise));
         assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary3() {
+        let label = model::Windows11::try_from("Microsoft Windows 11 Enterprise 22000.1219").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "21H2".to_string());
+
+        assert!(label.editions.contains(Edition::Enterprise));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary4() {
+        let label = Windows11::try_from("Microsoft Windows 11 Enterprise 21H2").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "21H2".to_string());
+
+        assert!(label.editions.contains(Edition::Enterprise));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 }

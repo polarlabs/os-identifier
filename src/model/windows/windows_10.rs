@@ -5,6 +5,10 @@
 // https://learn.microsoft.com/lifecycle/announcements/windows-10-1507-cb-cbb-end-of-servicing
 // https://learn.microsoft.com/en-us/lifecycle/products/windows-10-iot-core
 //
+
+const VENDOR: &str = "Microsoft";
+const PRODUCT: &str = "Windows 10";
+
 #[derive(Debug)]
 pub(crate) struct Windows10 {
     vendor: String,
@@ -15,6 +19,26 @@ pub(crate) struct Windows10 {
 }
 
 impl Windows10 {
+    pub(crate) fn build(release: Release, service_channel: ServiceChannel) -> Windows10 {
+        Windows10 {
+            vendor: VENDOR.to_string(),
+            product: PRODUCT.to_string(),
+            release,
+            editions: None,
+            service_channel,
+        }
+    }
+
+    pub(crate) fn product(mut self, product: &str) -> Windows10 {
+        self.product = product.to_string();
+        self
+    }
+
+    pub(crate) fn editions(mut self, editions: Editions) -> Windows10 {
+        self.editions = Some(editions);
+        self
+    }
+
     pub(super) fn to_string(&self) -> Vec<String> {
         if let Some(editions) = &self.editions {
             let out = editions
@@ -59,82 +83,17 @@ impl TryFrom<&str> for Windows10 {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let parts: Vec<&str> = value.split('-').collect();
-
-        if let Some(first) = parts.get(0) {
-            if *first != "10" {
-                Err(String::from("Not Windows 10."))
-            } else {
-                // Ensure at least 2 parts are present
-                if parts.len() < 2 {
-                    Err(String::from("This is not a Windows 10."))
-                } else if parts.len() == 2 {
-                    let release = Release::from(parts[1]);
-                    let service_channel = ServiceChannel::try_from(&release).unwrap_or_else(|_| {
-                        parts
-                            .get(3)
-                            .map(|&s| ServiceChannel::from(s))
-                            .unwrap_or_default()
-                    });
-
-                    Ok(Windows10 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 10".to_string(),
-                        release,
-                        editions: Some(Editions::all()),
-                        service_channel,
-                    })
-                } else if parts.len() == 3 {
-                    match parts[2] {
-                        "e" => Ok(Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Some(Editions::all_e()),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        "iot" => Ok(Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10 IoT Core".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: None,
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        "w" => Ok(Windows10 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 10".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Some(Editions::all_w()),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        _ => Err(String::from("This is not a Windows 10.")),
-                    }
-                } else if parts.len() == 4 {
-                    let editions = Some(Editions::from(parts[2]));
-                    let release = Release::from(parts[1]);
-                    let service_channel = ServiceChannel::from(parts[3]);
-                    let service_channel =
-                        ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
-
-                    Ok(Windows10 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 10".to_string(),
-                        release,
-                        editions,
-                        service_channel,
-                    })
-                } else {
-                    Err(String::from("This is not a Windows 10."))
-                }
-            }
+        if let Ok(label) = crate::parser::endoflife::EndOfLifeLabel::try_from(value) {
+            crate::parser::endoflife::windows::Windows10Parser::parse(&label)
         } else {
-            Err(String::from("This is not Windows 10."))
+            let label = crate::parser::generic::GenericLabel::from(value);
+            crate::parser::generic::windows::Windows10Parser::parse(&label)
         }
     }
 }
 
 #[derive(Debug)]
-struct Release(String);
+pub(crate) struct Release(String);
 
 impl Release {
     fn is_semi_annual(&self) -> bool {
@@ -159,35 +118,35 @@ impl std::fmt::Display for Release {
 }
 
 #[derive(Debug)]
-struct Editions(Vec<EditionE>);
+pub(crate) struct Editions(pub(crate) Vec<Edition>);
 
 impl Editions {
-    fn all() -> Self {
+    pub(crate) fn all() -> Self {
         let mut editions = Editions::all_e();
         editions.0.append(&mut Editions::all_w().0);
 
         Editions(editions.0)
     }
 
-    fn all_e() -> Self {
+    pub(crate) fn all_e() -> Self {
         Editions(vec![
-            EditionE::Education,
-            EditionE::Enterprise,
-            EditionE::EnterpriseIoT,
+            Edition::Education,
+            Edition::Enterprise,
+            Edition::EnterpriseIoT,
         ])
     }
 
-    fn all_w() -> Self {
+    pub(crate) fn all_w() -> Self {
         Editions(vec![
-            EditionE::Home,
-            EditionE::Pro,
-            EditionE::ProEducation,
-            EditionE::ProForWorkstations,
+            Edition::Home,
+            Edition::Pro,
+            Edition::ProEducation,
+            Edition::ProForWorkstations,
         ])
     }
 
     #[allow(dead_code)]
-    fn contains(&self, edition: EditionE) -> bool {
+    fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }
 
@@ -201,15 +160,15 @@ impl From<&str> for Editions {
     fn from(value: &str) -> Self {
         let editions = match value {
             "e" => vec![
-                EditionE::Education,
-                EditionE::Enterprise,
-                EditionE::EnterpriseIoT,
+                Edition::Education,
+                Edition::Enterprise,
+                Edition::EnterpriseIoT,
             ],
             "w" => vec![
-                EditionE::Home,
-                EditionE::Pro,
-                EditionE::ProEducation,
-                EditionE::ProForWorkstations,
+                Edition::Home,
+                Edition::Pro,
+                Edition::ProEducation,
+                Edition::ProForWorkstations,
             ],
             _ => vec![],
         };
@@ -219,7 +178,7 @@ impl From<&str> for Editions {
 }
 
 #[derive(PartialEq, Debug)]
-enum EditionE {
+pub(crate) enum Edition {
     Education,
     Enterprise,
     EnterpriseIoT,
@@ -229,16 +188,16 @@ enum EditionE {
     ProForWorkstations,
 }
 
-impl std::fmt::Display for EditionE {
+impl std::fmt::Display for Edition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
-            EditionE::Education => "Education",
-            EditionE::Enterprise => "Enterprise",
-            EditionE::EnterpriseIoT => "Enterprise IoT",
-            EditionE::Home => "Home",
-            EditionE::Pro => "Pro",
-            EditionE::ProEducation => "Pro Education",
-            EditionE::ProForWorkstations => "Pro for Workstations",
+            Edition::Education => "Education",
+            Edition::Enterprise => "Enterprise",
+            Edition::EnterpriseIoT => "Enterprise IoT",
+            Edition::Home => "Home",
+            Edition::Pro => "Pro",
+            Edition::ProEducation => "Pro Education",
+            Edition::ProForWorkstations => "Pro for Workstations",
         };
 
         write!(f, "{}", out.to_string())
@@ -438,6 +397,42 @@ mod tests {
         assert_eq!(label.release.to_string(), "1507".to_string());
 
         assert!(label.editions.is_none());
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary1() {
+        let label = Windows10::try_from("Windows 10 Professional Edition (Build 19045) (64 Bit) GA (General Availability)").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 10".to_string());
+        assert_eq!(label.release.to_string(), "22H2".to_string());
+
+        assert!(label.editions.unwrap().contains(Edition::Pro));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary2() {
+        let label = Windows10::try_from("Microsoft Windows 10 Pro 17763").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 10".to_string());
+        assert_eq!(label.release.to_string(), "1809".to_string());
+
+        assert!(label.editions.unwrap().contains(Edition::Pro));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary3() {
+        let label = Windows10::try_from("Microsoft Windows 10 Enterprise 21H1").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 10".to_string());
+        assert_eq!(label.release.to_string(), "21H1".to_string());
+
+        assert!(label.editions.unwrap().contains(Edition::Enterprise));
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 }
