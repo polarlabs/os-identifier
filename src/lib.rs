@@ -13,5 +13,9 @@
 //! }
 //! ```
 
-mod windows;
-pub use windows::Windows;
+mod model;
+pub use model::Windows;
+
+mod parser;
+
+mod util;

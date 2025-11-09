@@ -1,7 +1,12 @@
-mod windows_10;
-mod windows_11;
 mod windows_7;
 mod windows_8;
+
+pub(crate) mod windows_10;
+pub(crate) use windows_10::Windows10;
+
+pub(crate) mod windows_11;
+pub(crate) use windows_11::Windows11;
+
 mod windows_vista;
 mod windows_xp;
 
@@ -25,8 +30,6 @@ mod windows_server_2019ff;
 
 use windows_7::Windows7;
 use windows_8::Windows8;
-use windows_10::Windows10;
-use windows_11::Windows11;
 use windows_2000::Windows2000;
 use windows_server_1709ff::WindowsServer1709ff;
 use windows_server_2003::WindowsServer2003;

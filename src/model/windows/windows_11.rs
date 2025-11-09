@@ -1,5 +1,6 @@
-//
-//
+const VENDOR: &str = "Microsoft";
+const PRODUCT: &str = "Windows 11";
+
 #[derive(Debug)]
 pub(crate) struct Windows11 {
     vendor: String,
@@ -10,6 +11,21 @@ pub(crate) struct Windows11 {
 }
 
 impl Windows11 {
+    pub(crate) fn build(release: Release, service_channel: ServiceChannel) -> Windows11 {
+        Windows11 {
+            vendor: VENDOR.to_string(),
+            product: PRODUCT.to_string(),
+            release,
+            editions: Editions(vec![]),
+            service_channel,
+        }
+    }
+
+    pub(crate) fn editions(mut self, editions: Editions) -> Windows11 {
+        self.editions = editions;
+        self
+    }
+
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self
             .editions
@@ -38,66 +54,17 @@ impl TryFrom<&str> for Windows11 {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let parts: Vec<&str> = value.split('-').collect();
-
-        if let Some(first) = parts.get(0) {
-            if *first != "11" {
-                Err(String::from("Not Windows 11."))
-            } else {
-                // Ensure at least 2 parts are present
-                if parts.len() < 3 {
-                    Err(String::from("This is not a Windows 11."))
-                } else if parts.len() == 3 {
-                    match parts[2] {
-                        "e" => Ok(Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_e(),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        "iot" => Ok(Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_iot(),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        "w" => Ok(Windows11 {
-                            vendor: "Microsoft".to_string(),
-                            product: "Windows 11".to_string(),
-                            release: Release::from(parts[1]),
-                            editions: Editions::all_w(),
-                            service_channel: ServiceChannel::GAC,
-                        }),
-                        _ => Err(String::from("This is not a Windows 11.")),
-                    }
-                } else if parts.len() == 4 {
-                    let editions = Editions::from(parts[2]);
-                    let release = Release::from(parts[1]);
-                    let service_channel = ServiceChannel::from(parts[3]);
-
-                    Ok(Windows11 {
-                        vendor: "Microsoft".to_string(),
-                        product: "Windows 11".to_string(),
-                        release,
-                        editions,
-                        service_channel,
-                    })
-                } else {
-                    Err(String::from("This is not a Windows 11."))
-                }
-            }
+        if let Ok(label) = crate::parser::endoflife::EndOfLifeLabel::try_from(value) {
+            crate::parser::endoflife::windows::Windows11Parser::parse(&label)
         } else {
-            Err(String::from("This is not Windows 11."))
+            let label = crate::parser::generic::GenericLabel::from(value);
+            crate::parser::generic::windows::Windows11Parser::parse(&label)
         }
     }
 }
 
 #[derive(Debug)]
-struct Release(String);
-
-impl Release {}
+pub(crate) struct Release(String);
 
 impl From<&str> for Release {
     fn from(value: &str) -> Self {
@@ -112,41 +79,11 @@ impl std::fmt::Display for Release {
 }
 
 #[derive(Debug)]
-struct Editions(Vec<Edition>);
+pub(crate) struct Editions(pub(crate) Vec<Edition>);
 
 impl Editions {
     #[allow(dead_code)]
-    fn all() -> Self {
-        let mut editions = Editions::all_e();
-        editions.0.append(&mut Editions::all_iot().0);
-        editions.0.append(&mut Editions::all_w().0);
-
-        Editions(editions.0)
-    }
-
-    fn all_e() -> Self {
-        Editions(vec![
-            Edition::Education,
-            Edition::Enterprise,
-            Edition::EnterpriseMultiSession,
-        ])
-    }
-
-    fn all_iot() -> Self {
-        Editions(vec![Edition::IoTEnterprise])
-    }
-
-    fn all_w() -> Self {
-        Editions(vec![
-            Edition::Home,
-            Edition::Pro,
-            Edition::ProEducation,
-            Edition::ProForWorkstations,
-        ])
-    }
-
-    #[allow(dead_code)]
-    fn contains(&self, edition: Edition) -> bool {
+    pub(crate) fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }
 
@@ -156,30 +93,8 @@ impl Editions {
     }
 }
 
-impl From<&str> for Editions {
-    fn from(value: &str) -> Self {
-        let editions = match value {
-            "e" => vec![
-                Edition::Education,
-                Edition::Enterprise,
-                Edition::EnterpriseMultiSession,
-            ],
-            "iot" => vec![Edition::IoTEnterprise],
-            "w" => vec![
-                Edition::Home,
-                Edition::Pro,
-                Edition::ProEducation,
-                Edition::ProForWorkstations,
-            ],
-            _ => vec![],
-        };
-
-        Editions(editions)
-    }
-}
-
 #[derive(PartialEq, Debug)]
-enum Edition {
+pub(crate) enum Edition {
     Education,
     Enterprise,
     EnterpriseMultiSession,
@@ -222,6 +137,15 @@ impl ServiceChannel {
     }
 }
 
+impl From<&str> for ServiceChannel {
+    fn from(value: &str) -> Self {
+        match value {
+            "lts" => ServiceChannel::LTSC,
+            _ => ServiceChannel::GAC,
+        }
+    }
+}
+
 impl Default for ServiceChannel {
     fn default() -> Self {
         ServiceChannel::GAC
@@ -239,17 +163,9 @@ impl std::fmt::Display for ServiceChannel {
     }
 }
 
-impl From<&str> for ServiceChannel {
-    fn from(value: &str) -> Self {
-        match value {
-            "lts" => ServiceChannel::LTSC,
-            _ => ServiceChannel::GAC,
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
+    use crate::model;
     use super::*;
 
     #[test]
@@ -297,6 +213,54 @@ mod tests {
         assert_eq!(label.release.to_string(), "24H2".to_string());
 
         assert_eq!(label.editions.len(), Editions::all_w().len());
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary1() {
+        let label = model::Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "24H2".to_string());
+
+        assert!(label.editions.contains(model::windows_11::Edition::Pro));
+        assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary2() {
+        let label = model::Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "24H2".to_string());
+
+        assert!(label.editions.contains(model::windows_11::Edition::Enterprise));
+        assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary3() {
+        let label = model::Windows11::try_from("Microsoft Windows 11 Enterprise 22000.1219").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "21H2".to_string());
+
+        assert!(label.editions.contains(Edition::Enterprise));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
+    }
+
+    #[test]
+    fn test_from_string_arbitrary4() {
+        let label = Windows11::try_from("Microsoft Windows 11 Enterprise 21H2").unwrap();
+
+        assert_eq!(label.vendor, "Microsoft".to_string());
+        assert_eq!(label.product, "Windows 11".to_string());
+        assert_eq!(label.release.to_string(), "21H2".to_string());
+
+        assert!(label.editions.contains(Edition::Enterprise));
         assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 }
