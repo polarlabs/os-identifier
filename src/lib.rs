@@ -13,9 +13,11 @@
 //! }
 //! ```
 
-mod model;
+pub(crate) mod model;
+// todo: do not expose model
 pub use model::Windows;
 
 mod parser;
+pub use parser::OS;
 
 mod util;
