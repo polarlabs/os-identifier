@@ -2,7 +2,7 @@
 fn test_windows_7() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("7-sp1");
+    let windows = Windows::parse("7-sp1");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -14,7 +14,7 @@ fn test_windows_7() {
 fn test_windows_8() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("8.1");
+    let windows = Windows::parse("8.1");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -26,7 +26,7 @@ fn test_windows_8() {
 fn test_windows_10() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("10-1809-w");
+    let windows = Windows::parse("10-1809-w");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -38,7 +38,7 @@ fn test_windows_10() {
 fn test_windows_10_1507_iot() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("10-1507-iot");
+    let windows = Windows::parse("10-1507-iot");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -50,7 +50,7 @@ fn test_windows_10_1507_iot() {
 fn test_windows_11_endoflife_1() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("11-24h2-e");
+    let windows = Windows::parse("11-24h2-e");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -62,7 +62,7 @@ fn test_windows_11_endoflife_1() {
 fn test_windows_11_generic_1() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("Microsoft Windows 11 Enterprise 21H2");
+    let windows = Windows::parse("Microsoft Windows 11 Enterprise 21H2");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -74,7 +74,7 @@ fn test_windows_11_generic_1() {
 fn test_windows_server_1709() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("1709-sac");
+    let windows = Windows::parse("1709-sac");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -87,7 +87,7 @@ fn test_windows_server_1709() {
 fn test_windows_server_23h2() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("23h2-ac");
+    let windows = Windows::parse("23h2-ac");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -100,7 +100,7 @@ fn test_windows_server_23h2() {
 fn test_windows_2000() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2000-sp1");
+    let windows = Windows::parse("2000-sp1");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -112,7 +112,7 @@ fn test_windows_2000() {
 fn test_windows_server_2003() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2003-sp1");
+    let windows = Windows::parse("2003-sp1");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -124,7 +124,7 @@ fn test_windows_server_2003() {
 fn test_windows_server_2008() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2008-sp2");
+    let windows = Windows::parse("2008-sp2");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -136,7 +136,7 @@ fn test_windows_server_2008() {
 fn test_windows_server_2008_r2() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2008-r2-sp1");
+    let windows = Windows::parse("2008-r2-sp1");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -148,7 +148,7 @@ fn test_windows_server_2008_r2() {
 fn test_windows_server_2012() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2012");
+    let windows = Windows::parse("2012");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -160,7 +160,7 @@ fn test_windows_server_2012() {
 fn test_windows_server_2012_r2() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2012-r2");
+    let windows = Windows::parse("2012-r2");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -172,7 +172,7 @@ fn test_windows_server_2012_r2() {
 fn test_windows_server_2016() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2016");
+    let windows = Windows::parse("2016");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -184,7 +184,7 @@ fn test_windows_server_2016() {
 fn test_windows_server_2019() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2019");
+    let windows = Windows::parse("2019");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -196,7 +196,7 @@ fn test_windows_server_2019() {
 fn test_windows_server_2022() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2022");
+    let windows = Windows::parse("2022");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -208,7 +208,7 @@ fn test_windows_server_2022() {
 fn test_windows_server_2025() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("2025");
+    let windows = Windows::parse("2025");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -220,7 +220,7 @@ fn test_windows_server_2025() {
 fn test_windows_vista() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("6-sp2");
+    let windows = Windows::parse("6-sp2");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -232,7 +232,7 @@ fn test_windows_vista() {
 fn test_windows_xp() {
     use os_identifier::Windows;
 
-    let windows = Windows::try_from("5-sp3");
+    let windows = Windows::parse("5-sp3");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();

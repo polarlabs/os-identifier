@@ -2,6 +2,9 @@ pub(crate) mod endoflife;
 
 pub(crate) mod generic;
 
+mod windows;
+pub use windows::Windows;
+
 use crate::model;
 
 const ERR_UNKNOWN_OS: &str = "Unknown operating system:";
