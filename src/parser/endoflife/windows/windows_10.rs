@@ -37,7 +37,7 @@ impl Windows10Parser {
                             let service_channel = model::windows_10::ServiceChannel::GAC;
 
                             let windows10 = model::Windows10::build(release, service_channel)
-                                .product("Windows 10 IoT Core");
+                                .iot_core("Windows 10 IoT Core");
                             
                             Ok(windows10)
                         },

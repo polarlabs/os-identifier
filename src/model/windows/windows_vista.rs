@@ -10,6 +10,14 @@ pub(crate) struct WindowsVista {
 }
 
 impl WindowsVista {
+    pub(super) fn vendor(&self) -> &str {
+        self.vendor.as_str()
+    }
+
+    pub(super) fn product(&self) -> &str {
+        self.product.as_str()
+    }
+    
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self
             .editions
