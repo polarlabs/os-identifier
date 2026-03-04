@@ -20,6 +20,14 @@ impl Windows11 {
             service_channel,
         }
     }
+    
+    pub(super) fn vendor(&self) -> &str {
+        self.vendor.as_str()
+    }
+
+    pub(super) fn product(&self) -> &str {
+        self.product.as_str()
+    }
 
     pub(crate) fn editions(mut self, editions: Editions) -> Windows11 {
         self.editions = editions;
@@ -165,7 +173,6 @@ impl std::fmt::Display for ServiceChannel {
 
 #[cfg(test)]
 mod tests {
-    use crate::model;
     use super::*;
 
     #[test]
@@ -218,31 +225,31 @@ mod tests {
 
     #[test]
     fn test_from_string_arbitrary1() {
-        let label = model::Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+        let label = Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
         assert_eq!(label.release.to_string(), "24H2".to_string());
 
-        assert!(label.editions.contains(model::windows_11::Edition::Pro));
-        assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
+        assert!(label.editions.contains(Edition::Pro));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 
     #[test]
     fn test_from_string_arbitrary2() {
-        let label = model::Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+        let label = Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
         assert_eq!(label.release.to_string(), "24H2".to_string());
 
-        assert!(label.editions.contains(model::windows_11::Edition::Enterprise));
-        assert_eq!(label.service_channel, model::windows_11::ServiceChannel::GAC);
+        assert!(label.editions.contains(Edition::Enterprise));
+        assert_eq!(label.service_channel, ServiceChannel::GAC);
     }
 
     #[test]
     fn test_from_string_arbitrary3() {
-        let label = model::Windows11::try_from("Microsoft Windows 11 Enterprise 22000.1219").unwrap();
+        let label = Windows11::try_from("Microsoft Windows 11 Enterprise 22000.1219").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());

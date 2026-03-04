@@ -59,6 +59,18 @@ fn test_windows_11_endoflife_1() {
 }
 
 #[test]
+fn test_windows_11_endoflife_2() {
+    use os_identifier::Windows;
+
+    let windows = Windows::parse("11-24h2-e-lts");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert!(canonical_names.contains(&String::from("Microsoft Windows 11 Enterprise 24H2 LTSC")));
+}
+
+#[test]
 fn test_windows_11_generic_1() {
     use os_identifier::Windows;
 
@@ -71,6 +83,54 @@ fn test_windows_11_generic_1() {
 }
 
 #[test]
+fn test_windows_11_generic_2() {
+    use os_identifier::Windows;
+
+    let windows = Windows::parse("Windows 11 Professional Edition (Build 26200) (64 Bit)");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert!(canonical_names.contains(&String::from("Microsoft Windows 11 Pro 25H2")));
+}
+
+#[test]
+fn test_windows_11_generic_2_w_sc_ga() {
+    use os_identifier::Windows;
+
+    let windows = Windows::parse("Windows 11 Professional Edition (Build 26200) (64 Bit) GA (General Availability)");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert!(canonical_names.contains(&String::from("Microsoft Windows 11 Pro 25H2")));
+}
+
+#[test]
+fn test_windows_11_generic_2_w_sc_lts() {
+    use os_identifier::Windows;
+
+    let windows = Windows::parse("Windows 11 Enterprise (Build 26100) (64 Bit) LTS");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert!(canonical_names.contains(&String::from("Microsoft Windows 11 Enterprise 24H2 LTSC")));
+}
+
+#[test]
+fn test_windows_11_generic_3() {
+    use os_identifier::Windows;
+
+    let windows = Windows::parse("Windows 11 Pro 10.0.26200.7840");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert!(canonical_names.contains(&String::from("Microsoft Windows 11 Pro 25H2")));
+}
+
+#[test]
 fn test_windows_server_1709() {
     use os_identifier::Windows;
 
@@ -79,7 +139,6 @@ fn test_windows_server_1709() {
 
     let windows = windows.unwrap();
     let canonical_names = windows.to_string();
-    println!("Debug: {:?}", canonical_names);
     assert!(canonical_names.contains(&String::from("Microsoft Windows Server Datacenter 1709")));
 }
 

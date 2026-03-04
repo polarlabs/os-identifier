@@ -29,7 +29,15 @@ impl Windows10 {
         }
     }
 
-    pub(crate) fn product(mut self, product: &str) -> Windows10 {
+    pub(super) fn vendor(&self) -> &str {
+        self.vendor.as_str()
+    }
+
+    pub(super) fn product(&self) -> &str {
+        self.product.as_str()
+    }
+
+    pub(crate) fn iot_core(mut self, product: &str) -> Windows10 {
         self.product = product.to_string();
         self
     }

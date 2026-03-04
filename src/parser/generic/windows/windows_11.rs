@@ -80,7 +80,7 @@ impl<'a> TryFrom<&GenericLabel<'a>> for ServiceChannel {
 
         if crate::util::contains_any_word(value, &["General Availability", "GA"]) {
             Ok(ServiceChannel::GAC)
-        } else if crate::util::contains_any_word(value, &["LTSC"]) {
+        } else if crate::util::contains_any_word(value, &["LTS", "LTSC"]) {
             Ok(ServiceChannel::LTSC)
         } else {
             Err(String::from(ERR_UNKNOWN_SERVICE_CHANNEL))

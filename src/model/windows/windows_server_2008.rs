@@ -14,6 +14,14 @@ pub(crate) struct WindowsServer2008 {
 }
 
 impl WindowsServer2008 {
+    pub(super) fn vendor(&self) -> &str {
+        self.vendor.as_str()
+    }
+
+    pub(super) fn product(&self) -> &str {
+        self.product.as_str()
+    }
+    
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self
             .editions
