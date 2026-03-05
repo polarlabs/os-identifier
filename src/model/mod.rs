@@ -31,6 +31,14 @@ impl OS {
             OperatingSystem::Windows(w) => w.product(),
         }
     }
+
+    pub fn to_string(&self) -> Vec<String> {
+        match &self.0 {
+            OperatingSystem::Windows(os) => {
+                os.to_string()
+            }
+        }
+    }
 }
 
 impl Windows {
@@ -47,6 +55,10 @@ impl Windows {
     pub fn product(&self) -> String {
         self.0.product()
     }
+
+    pub fn to_string(&self) -> Vec<String> {
+        self.0.to_string()
+    }
 }
 
 impl TryFrom<&str> for OperatingSystem {
@@ -61,12 +73,15 @@ impl TryFrom<&str> for OperatingSystem {
     }
 }
 
+/*
 impl std::fmt::Display for OS {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0.to_string())
     }
 }
+*/
 
+/*
 impl std::fmt::Display for OperatingSystem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -76,10 +91,13 @@ impl std::fmt::Display for OperatingSystem {
         }
     }
 }
+*/
 
+/*
 impl std::fmt::Display for Windows {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // todo: remove debug :?
         write!(f, "{:?}", self.0.to_string())
     }
 }
+*/
