@@ -52,6 +52,7 @@ impl TryFrom<&str> for Windows2000 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
+        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
 
         if let Some(first) = parts.get(0) {
             if *first != "2000" {
@@ -192,7 +193,7 @@ mod tests {
 
     #[test]
     fn test_from_string_wo_release() {
-        let label = Windows2000::try_from("2000").unwrap();
+        let label = Windows2000::try_from("windows-server-2000").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 2000".to_string());
@@ -202,7 +203,7 @@ mod tests {
 
     #[test]
     fn test_from_string_w_release() {
-        let label = Windows2000::try_from("2000-sp4").unwrap();
+        let label = Windows2000::try_from("windows-server-2000-sp4").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 2000".to_string());

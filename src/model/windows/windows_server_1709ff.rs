@@ -52,6 +52,7 @@ impl TryFrom<&str> for WindowsServer1709ff {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
+        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
 
         if let Some(first) = parts.get(0) && let Some(second) = parts.get(1) {
             if ! (*first >= "1709" && ( *second == "ac" || *second == "sac" )) {
@@ -198,7 +199,7 @@ mod tests {
 
     #[test]
     fn test_from_string_1709_sac() {
-        let label = WindowsServer1709ff::try_from("1709-sac").unwrap();
+        let label = WindowsServer1709ff::try_from("windows-server-1709-sac").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server".to_string());
@@ -209,7 +210,7 @@ mod tests {
 
     #[test]
     fn test_from_string_20h2_sac() {
-        let label = WindowsServer1709ff::try_from("20h2-sac").unwrap();
+        let label = WindowsServer1709ff::try_from("windows-server-20h2-sac").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server".to_string());
@@ -220,7 +221,7 @@ mod tests {
 
     #[test]
     fn test_from_string_23h2_ac() {
-        let label = WindowsServer1709ff::try_from("23h2-ac").unwrap();
+        let label = WindowsServer1709ff::try_from("windows-server-23h2-ac").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server".to_string());

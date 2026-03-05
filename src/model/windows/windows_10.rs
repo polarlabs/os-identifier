@@ -314,7 +314,7 @@ mod tests {
 
     #[test]
     fn test_from_string_h2() {
-        let label = Windows10::try_from("10-22h2").unwrap();
+        let label = Windows10::try_from("windows-10-22h2").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -326,7 +326,7 @@ mod tests {
 
     #[test]
     fn test_from_string_h1() {
-        let label = Windows10::try_from("10-22h1").unwrap();
+        let label = Windows10::try_from("windows-10-22h1").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -338,7 +338,7 @@ mod tests {
 
     #[test]
     fn test_from_string_e() {
-        let label = Windows10::try_from("10-1809-e").unwrap();
+        let label = Windows10::try_from("windows-10-1809-e").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -350,7 +350,7 @@ mod tests {
 
     #[test]
     fn test_from_string_w() {
-        let label = Windows10::try_from("10-1809-w").unwrap();
+        let label = Windows10::try_from("windows-10-1809-w").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -362,7 +362,7 @@ mod tests {
 
     #[test]
     fn test_from_string_enterpise_ltsc() {
-        let label = Windows10::try_from("10-1809-e-lts").unwrap();
+        let label = Windows10::try_from("windows-10-1809-e-lts").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -374,7 +374,7 @@ mod tests {
 
     #[test]
     fn test_from_string_enterpise_ltsb() {
-        let label = Windows10::try_from("10-1607-e-lts").unwrap();
+        let label = Windows10::try_from("windows-10-1607-e-lts").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -386,7 +386,7 @@ mod tests {
 
     #[test]
     fn test_from_string_all_editions() {
-        let label = Windows10::try_from("10-1507").unwrap();
+        let label = Windows10::try_from("windows-10-1507").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());
@@ -398,7 +398,7 @@ mod tests {
 
     #[test]
     fn test_from_string_iot_core() {
-        let label = Windows10::try_from("10-1507-iot").unwrap();
+        let label = Windows10::try_from("windows-10-1507-iot").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10 IoT Core".to_string());

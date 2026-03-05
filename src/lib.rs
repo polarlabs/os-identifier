@@ -13,24 +13,12 @@
 //! use os_identifier::OS;
 //!
 //! fn main() {
-//!     let os = OS::parse("11-24h2-w").unwrap();
+//!     let os = OS::parse("windows-11-24h2-w").unwrap();
 //!
 //!     assert_eq!(os.vendor(), String::from("Microsoft"));
 //!     assert_eq!(os.product(), String::from("Windows 11"));
 //!
 //!     assert!(os.to_string().contains(&String::from("Microsoft Windows 11 Pro 24H2")));
-//! }
-//! ```
-//!
-//! If you already know it is a Windows, you can use this as well.
-//!
-//! ```
-//! use os_identifier::Windows;
-//!
-//! fn main() {
-//!     let os_strings = Windows::parse("11-24h2-w").unwrap();
-//!
-//!     assert!(os_strings.to_string().contains(&String::from("Microsoft Windows 11 Pro 24H2")));
 //! }
 //! ```
 mod model;

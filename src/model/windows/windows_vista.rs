@@ -40,6 +40,7 @@ impl TryFrom<&str> for WindowsVista {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
+        let parts: Vec<&str> = parts.iter().skip(1).map(|&s| s).collect();
 
         if let Some(first) = parts.get(0) {
             if *first != "6" {
@@ -188,7 +189,7 @@ mod tests {
 
     #[test]
     fn test_from_string() {
-        let label = WindowsVista::try_from("6-sp2").unwrap();
+        let label = WindowsVista::try_from("windows-6-sp2").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Vista".to_string());

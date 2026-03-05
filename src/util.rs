@@ -61,8 +61,8 @@ mod tests {
 
     #[test]
     fn test_is_subdivided_by_dashes_only() {
-        let label1 = "11-24h2-iot-lts";
-        let label2 = "11-24h2-iot lts";
+        let label1 = "windows-11-24h2-iot-lts";
+        let label2 = "windows-11-24h2-iot lts";
         let label3 = "2025";
         let label4 = "8.1";
 

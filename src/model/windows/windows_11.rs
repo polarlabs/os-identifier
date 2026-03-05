@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn test_from_string_iot_lts() {
-        let label = Windows11::try_from("11-24h2-iot-lts").unwrap();
+        let label = Windows11::try_from("windows-11-24h2-iot-lts").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
@@ -189,7 +189,7 @@ mod tests {
 
     #[test]
     fn test_from_string_e_lts() {
-        let label = Windows11::try_from("11-24h2-e-lts").unwrap();
+        let label = Windows11::try_from("windows-11-24h2-e-lts").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
@@ -201,7 +201,7 @@ mod tests {
 
     #[test]
     fn test_from_string_e() {
-        let label = Windows11::try_from("11-24h2-e").unwrap();
+        let label = Windows11::try_from("windows-11-24h2-e").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
@@ -213,7 +213,7 @@ mod tests {
 
     #[test]
     fn test_from_string_w() {
-        let label = Windows11::try_from("11-24h2-w").unwrap();
+        let label = Windows11::try_from("windows-11-24h2-w").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());

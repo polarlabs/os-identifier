@@ -52,6 +52,7 @@ impl TryFrom<&str> for WindowsServer2016 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
+        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
 
         if let Some(first) = parts.get(0) {
             if *first != "2016" {
@@ -189,7 +190,7 @@ mod tests {
 
     #[test]
     fn test_from_string_wo_release() {
-        let label = WindowsServer2016::try_from("2016").unwrap();
+        let label = WindowsServer2016::try_from("windows-server-2016").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server 2016".to_string());

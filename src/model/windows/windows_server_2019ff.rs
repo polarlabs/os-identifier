@@ -52,6 +52,7 @@ impl TryFrom<&str> for WindowsServer2019ff {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
+        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
 
         if let Some(first) = parts.get(0) && let None = parts.get(1) {
             if ! (*first >= "2019" && *first <= "2999") {
@@ -186,7 +187,7 @@ mod tests {
 
     #[test]
     fn test_from_string_2019() {
-        let label = WindowsServer2019ff::try_from("2019").unwrap();
+        let label = WindowsServer2019ff::try_from("windows-server-2019").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server 2019".to_string());
@@ -196,7 +197,7 @@ mod tests {
 
     #[test]
     fn test_from_string_2022() {
-        let label = WindowsServer2019ff::try_from("2022").unwrap();
+        let label = WindowsServer2019ff::try_from("windows-server-2022").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server 2022".to_string());
@@ -206,7 +207,7 @@ mod tests {
 
     #[test]
     fn test_from_string_2025() {
-        let label = WindowsServer2019ff::try_from("2025").unwrap();
+        let label = WindowsServer2019ff::try_from("windows-server-2025").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows Server 2025".to_string());

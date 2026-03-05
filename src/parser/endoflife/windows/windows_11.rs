@@ -6,38 +6,39 @@ pub(crate) struct Windows11Parser();
 
 impl Windows11Parser {
     pub(crate) fn parse(label: &EndOfLifeLabel) -> Result<model::Windows11, String> {
-        if let Some(first) = label.get(0) {
-            if first != "11" {
-                Err(String::from("Not Windows 11."))
-            } else {
-                // Ensure at least 2 parts are present
-                if label.len() < 3 {
-                    Err(String::from("This is not a Windows 11."))
-                } else if label.len() == 3 {
-                    let release = model::windows_11::Release::from(label.get(1).unwrap());
-                    let service_channel = model::windows_11::ServiceChannel::GAC;
-
-                    let windows = model::Windows11::build(release, service_channel);
-
-                    match label.get(2) {
-                        Some("e") => Ok(windows.editions(crate::model::windows_11::Editions::all_e())),
-                        Some("iot") => Ok(windows.editions(crate::model::windows_11::Editions::all_iot())),
-                        Some("w") => Ok(windows.editions(crate::model::windows_11::Editions::all_w())),
-                        _ => Err(String::from("This is not a Windows 11.")),
-                    }
-                } else if label.len() == 4 {
-                    let release = crate::model::windows_11::Release::from(label.get(1).unwrap());
-                    let service_channel = crate::model::windows_11::ServiceChannel::from(label.get(3).unwrap());
-
-                    let windows = model::Windows11::build(release, service_channel);
-
-                    Ok(windows.editions(model::windows_11::Editions::from(label.get(2).unwrap())))
-                } else {
-                    Err(String::from("This is not a Windows 11."))
-                }
-            }
+        if label.len() < 4 {
+            Err(String::from("This is not a Windows 11."))
         } else {
-            Err(String::from("This is not Windows 11."))
+            if let Some(second) = label.get(1) {
+                if second != "11" {
+                    Err(String::from("Not Windows 11."))
+                } else {
+                    if label.len() == 4 {
+                        let release = model::windows_11::Release::from(label.get(2).unwrap());
+                        let service_channel = model::windows_11::ServiceChannel::GAC;
+
+                        let windows = model::Windows11::build(release, service_channel);
+
+                        match label.get(3) {
+                            Some("e") => Ok(windows.editions(crate::model::windows_11::Editions::all_e())),
+                            Some("iot") => Ok(windows.editions(crate::model::windows_11::Editions::all_iot())),
+                            Some("w") => Ok(windows.editions(crate::model::windows_11::Editions::all_w())),
+                            _ => Err(String::from("This is not a Windows 11.")),
+                        }
+                    } else if label.len() == 5 {
+                        let release = crate::model::windows_11::Release::from(label.get(2).unwrap());
+                        let service_channel = crate::model::windows_11::ServiceChannel::from(label.get(4).unwrap());
+
+                        let windows = model::Windows11::build(release, service_channel);
+
+                        Ok(windows.editions(model::windows_11::Editions::from(label.get(3).unwrap())))
+                    } else {
+                        Err(String::from("This is not a Windows 11."))
+                    }
+                }
+            } else {
+                Err(String::from("This is not Windows 11."))
+            }
         }
     }
 }

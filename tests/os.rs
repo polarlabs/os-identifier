@@ -2,7 +2,7 @@
 fn test_windows_11_endoflife_1() {
     use os_identifier::OS;
 
-    let windows = OS::parse("11-24h2-e");
+    let windows = OS::parse("windows-11-24h2-e");
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();

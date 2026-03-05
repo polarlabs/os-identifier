@@ -35,12 +35,12 @@ impl TryFrom<&str> for Windows8 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            "8" => Ok(Windows8 {
+            "windows-8" => Ok(Windows8 {
                 vendor: "Microsoft".to_string(),
                 product: "Windows 8".to_string(),
                 editions: Editions::all(),
             }),
-            "8.1" => Ok(Windows8 {
+            "windows-8.1" => Ok(Windows8 {
                 vendor: "Microsoft".to_string(),
                 product: "Windows 8.1".to_string(),
                 editions: Editions::all(),
@@ -110,7 +110,7 @@ mod tests {
 
     #[test]
     fn test_from_string_8() {
-        let label = Windows8::try_from("8").unwrap();
+        let label = Windows8::try_from("windows-8").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 8".to_string());
@@ -120,7 +120,7 @@ mod tests {
 
     #[test]
     fn test_from_string_81() {
-        let label = Windows8::try_from("8.1").unwrap();
+        let label = Windows8::try_from("windows-8.1").unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 8.1".to_string());

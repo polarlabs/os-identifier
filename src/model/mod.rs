@@ -11,6 +11,7 @@ enum OperatingSystem {
 }
 
 // Public interface
+#[derive(Debug)]
 pub struct Windows(windows::Windows);
 
 impl OS {
