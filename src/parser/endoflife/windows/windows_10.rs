@@ -1,4 +1,5 @@
 use crate::model;
+use crate::model::windows_10::{Edition, Editions, Release, ServiceChannel};
 use super::super::EndOfLifeLabel;
 
 pub(crate) struct Windows10Parser();
@@ -13,23 +14,23 @@ impl Windows10Parser {
                     Err(String::from("Not Windows 10."))
                 } else {
                     if label.len() == 3 {
-                        let release = model::windows_10::Release::from(label.get(2).unwrap());
-                        let service_channel = model::windows_10::ServiceChannel::try_from(&release).unwrap_or_default();
+                        let release = Release::from(label.get(2).unwrap());
+                        let service_channel = ServiceChannel::try_from(&release).unwrap_or_default();
 
-                        let windows10 = model::Windows10::build(release, service_channel).editions(model::windows_10::Editions::all());
+                        let windows10 = model::Windows10::build(release, service_channel).editions(Editions::all());
                         Ok(windows10)
                     } else if label.len() == 4 {
                         match label.get(3) {
                             Some("e") => {
-                                let release = model::windows_10::Release::from(label.get(2).unwrap());
-                                let service_channel = model::windows_10::ServiceChannel::GAC;
+                                let release = Release::from(label.get(2).unwrap());
+                                let service_channel = ServiceChannel::GAC;
 
-                                let windows10 = model::Windows10::build(release, service_channel).editions(model::windows_10::Editions::all_e());
+                                let windows10 = model::Windows10::build(release, service_channel).editions(Editions::all_e());
                                 Ok(windows10)
                             },
                             Some("iot") => {
-                                let release = model::windows_10::Release::from(label.get(2).unwrap());
-                                let service_channel = model::windows_10::ServiceChannel::GAC;
+                                let release = Release::from(label.get(2).unwrap());
+                                let service_channel = ServiceChannel::GAC;
 
                                 let windows10 = model::Windows10::build(release, service_channel)
                                     .iot_core("Windows 10 IoT Core");
@@ -37,22 +38,22 @@ impl Windows10Parser {
                                 Ok(windows10)
                             },
                             Some("w") => {
-                                let release = model::windows_10::Release::from(label.get(2).unwrap());
-                                let service_channel = model::windows_10::ServiceChannel::GAC;
+                                let release = Release::from(label.get(2).unwrap());
+                                let service_channel = ServiceChannel::GAC;
 
                                 let windows10 = model::Windows10::build(release, service_channel)
-                                    .editions(model::windows_10::Editions::all_w());
+                                    .editions(Editions::all_w());
 
                                 Ok(windows10)
                             },
                             _ => Err(String::from("This is not a Windows 10.")),
                         }
                     } else if label.len() == 5 {
-                        let editions = model::windows_10::Editions::from(label.get(3).unwrap());
-                        let release = model::windows_10::Release::from(label.get(2).unwrap());
-                        let service_channel = model::windows_10::ServiceChannel::from(label.get(4).unwrap());
+                        let editions = Editions::from(label.get(3).unwrap());
+                        let release = Release::from(label.get(2).unwrap());
+                        let service_channel = ServiceChannel::from(label.get(4).unwrap());
                         let service_channel =
-                            model::windows_10::ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
+                            ServiceChannel::try_from((&release, &service_channel)).unwrap_or_default();
 
                         let windows10 = model::Windows10::build(release, service_channel)
                             .editions(editions);
@@ -66,5 +67,26 @@ impl Windows10Parser {
                 Err(String::from("This is not Windows 10."))
             }
         }
+    }
+}
+
+impl From<&str> for Editions {
+    fn from(value: &str) -> Self {
+        let editions = match value {
+            "e" => vec![
+                Edition::Education,
+                Edition::Enterprise,
+                Edition::EnterpriseIoT,
+            ],
+            "w" => vec![
+                Edition::Home,
+                Edition::Pro,
+                Edition::ProEducation,
+                Edition::ProForWorkstations,
+            ],
+            _ => vec![],
+        };
+
+        Editions(editions)
     }
 }

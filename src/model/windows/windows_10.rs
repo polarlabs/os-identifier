@@ -164,27 +164,6 @@ impl Editions {
     }
 }
 
-impl From<&str> for Editions {
-    fn from(value: &str) -> Self {
-        let editions = match value {
-            "e" => vec![
-                Edition::Education,
-                Edition::Enterprise,
-                Edition::EnterpriseIoT,
-            ],
-            "w" => vec![
-                Edition::Home,
-                Edition::Pro,
-                Edition::ProEducation,
-                Edition::ProForWorkstations,
-            ],
-            _ => vec![],
-        };
-
-        Editions(editions)
-    }
-}
-
 #[derive(PartialEq, Debug)]
 pub(crate) enum Edition {
     Education,

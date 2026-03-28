@@ -4,8 +4,10 @@ pub(crate) use windows::*;
 const ERR_UNKNOWN_OS: &str = "Unknown operating system:";
 
 // Public interface
+#[derive(Debug)]
 pub struct OS(OperatingSystem);
 
+#[derive(Debug)]
 enum OperatingSystem {
     Windows(Windows),
 }

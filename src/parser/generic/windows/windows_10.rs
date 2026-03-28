@@ -1,6 +1,6 @@
-use crate::model;
+use crate::{model, util};
+use crate::model::windows_10::{Edition, Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
-use crate::util;
 
 const ERR_UNKNOWN_RELEASE: &str = "Not a Windows 10 release.";
 const ERR_UNKNOWN_EDITION: &str = "Not a Windows 10 edition.";
@@ -12,17 +12,17 @@ pub(crate) struct Windows10Parser();
 
 impl Windows10Parser {
     pub(crate) fn parse(label: &GenericLabel) -> Result<model::Windows10, String> {
-        let edition = model::windows_10::Edition::try_from(label)?;
-        let release = model::windows_10::Release::try_from(label)?;
-        let service_channel = model::windows_10::ServiceChannel::try_from(label).unwrap_or_default();
+        let edition = Edition::try_from(label)?;
+        let release = Release::try_from(label)?;
+        let service_channel = ServiceChannel::try_from(label).unwrap_or_default();
 
-        let windows10 = model::Windows10::build(release, service_channel).editions(model::windows_10::Editions(vec![edition]));
+        let windows10 = model::Windows10::build(release, service_channel).editions(Editions(vec![edition]));
 
         Ok(windows10)
     }
 }
 
-impl<'a> TryFrom<&GenericLabel<'a>> for model::windows_10::Release {
+impl<'a> TryFrom<&GenericLabel<'a>> for Release {
     type Error = String;
 
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
@@ -44,36 +44,36 @@ impl<'a> TryFrom<&GenericLabel<'a>> for model::windows_10::Release {
     }
 }
 
-impl<'a> TryFrom<&GenericLabel<'a>> for model::windows_10::Edition {
+impl<'a> TryFrom<&GenericLabel<'a>> for Edition {
     type Error = String;
 
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
         let value = value.raw;
 
         if util::contains_any_word(value, &["Education Edition", "Education"]) {
-            Ok(model::windows_10::Edition::Education)
+            Ok(Edition::Education)
         } else if util::contains_any_word(value, &["Enterprise Edition", "Enterprise"]) {
-            Ok(model::windows_10::Edition::Enterprise)
+            Ok(Edition::Enterprise)
         } else if util::contains_any_word(value, &["Home Edition", "Home"]) {
-            Ok(model::windows_10::Edition::Home)
+            Ok(Edition::Home)
         } else if util::contains_any_word(value, &["Professional Edition", "Professional", "Pro"]) {
-            Ok(model::windows_10::Edition::Pro)
+            Ok(Edition::Pro)
         } else {
             Err(String::from(ERR_UNKNOWN_EDITION))
         }
     }
 }
 
-impl<'a> TryFrom<&GenericLabel<'a>> for model::windows_10::ServiceChannel {
+impl<'a> TryFrom<&GenericLabel<'a>> for ServiceChannel {
     type Error = String;
 
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
         let value = value.raw;
 
         if util::contains_any_word(value, &["General Availability", "GA"]) {
-            Ok(model::windows_10::ServiceChannel::GAC)
+            Ok(ServiceChannel::GAC)
         } else if util::contains_any_word(value, &["LTSC"]) {
-            Ok(model::windows_10::ServiceChannel::LTSC)
+            Ok(ServiceChannel::LTSC)
         } else {
             Err(String::from(ERR_UNKNOWN_SERVICE_CHANNEL))
         }

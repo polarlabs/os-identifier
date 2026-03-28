@@ -23,6 +23,19 @@ fn test_windows_11_generic_1() {
 }
 
 #[test]
+fn test_windows_server_generic_1() {
+    use os_identifier::OS;
+
+    let windows = OS::parse("Windows Server 2019 Server Standard Edition (Build 17763) (64 Bit)");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    println!("Result: {:?}", canonical_names);
+    assert!(canonical_names.contains(&String::from("Microsoft Windows Server 2019 Standard")));
+}
+
+#[test]
 fn test_unknown_endoflife_1() {
     use os_identifier::OS;
 

@@ -9,16 +9,20 @@ const OUT_FILE_WINDOWS_11: &str = "windows_11_build_to_release_map.rs";
 const IN_FILE_WINDOWS_10: &str = "maps/windows/windows_10/map-release-to-build.json";
 const OUT_FILE_WINDOWS_10: &str = "windows_10_build_to_release_map.rs";
 
+const IN_FILE_WINDOWS_SERVER_2019FF: &str = "maps/windows/windows_server_2019ff/map-release-to-build.json";
+const OUT_FILE_WINDOWS_SERVER_2019FF: &str = "windows_server_2019ff_build_to_release_map.rs";
 
 fn main() -> Result<(), serde_json::Error> {
     // Run if build.rs has changed
     println!("cargo:rerun-if-changed=build.rs");
-    // Run if input file has changed
+    // Run if the input file has changed
     println!("cargo:rerun-if-changed={}", IN_FILE_WINDOWS_11);
     println!("cargo:rerun-if-changed={}", IN_FILE_WINDOWS_10);
+    println!("cargo:rerun-if-changed={}", IN_FILE_WINDOWS_SERVER_2019FF);
 
     let _ = run(IN_FILE_WINDOWS_11, OUT_FILE_WINDOWS_11);
     let _ = run(IN_FILE_WINDOWS_10, OUT_FILE_WINDOWS_10);
+    let _ = run(IN_FILE_WINDOWS_SERVER_2019FF, OUT_FILE_WINDOWS_SERVER_2019FF);
 
     Ok(())
 }

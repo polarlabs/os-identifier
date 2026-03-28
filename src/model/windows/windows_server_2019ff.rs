@@ -1,3 +1,5 @@
+use crate::model::Windows10;
+
 //
 //
 const PRODUCT: &str = "Windows Server";
@@ -7,19 +9,34 @@ const VENDOR: &str = "Microsoft";
 pub(crate) struct WindowsServer2019ff {
     vendor: String,
     product: String,
-    editions: Editions,
     release: Option<Release>,
+    editions: Editions,
     #[allow(dead_code)]
     service_channel: ServiceChannel,
 }
 
 impl WindowsServer2019ff {
+    pub(crate) fn build(product: &str, release: Option<Release>, service_channel: ServiceChannel) -> WindowsServer2019ff {
+        WindowsServer2019ff {
+            vendor: VENDOR.to_string(),
+            product: format!("{} {}", PRODUCT.to_string(), product),
+            editions: Editions(vec![]),
+            release,
+            service_channel,
+        }
+    }
+
     pub(super) fn vendor(&self) -> &str {
         self.vendor.as_str()
     }
 
     pub(super) fn product(&self) -> &str {
         self.product.as_str()
+    }
+
+    pub(crate) fn editions(mut self, editions: Editions) -> WindowsServer2019ff {
+        self.editions = editions;
+        self
     }
     
     pub(super) fn to_string(&self) -> Vec<String> {
@@ -51,44 +68,17 @@ impl TryFrom<&str> for WindowsServer2019ff {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let parts: Vec<&str> = value.split('-').collect();
-        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
-
-        if let Some(first) = parts.get(0) && let None = parts.get(1) {
-            if ! (*first >= "2019" && *first <= "2999") {
-                Err(String::from("Not Windows Server."))
-            } else {
-                let vendor = VENDOR.to_string();
-                let product = PRODUCT.to_string();
-
-                if parts.len() == 1 {
-                    Ok(WindowsServer2019ff {
-                        vendor,
-                        product: format!("{product} {}", first),
-                        editions: Editions::all(),
-                        release: None,
-                        service_channel: ServiceChannel::default(),
-                    })
-                } else if parts.len() == 2 {
-                    Ok(WindowsServer2019ff {
-                        vendor,
-                        product: format!("{product} {}", first),
-                        editions: Editions::all(),
-                        release: Some(Release::from(parts[1])),
-                        service_channel: ServiceChannel::default(),
-                    })
-                } else {
-                    Err(String::from("This is not a Windows Server."))
-                }
-            }
+        if let Ok(label) = crate::parser::endoflife::EndOfLifeLabel::try_from(value) {
+            crate::parser::endoflife::windows::WindowsServer2019ffParser::parse(&label)
         } else {
-            Err(String::from("This is not a Windows Server."))
+            let label = crate::parser::generic::GenericLabel::from(value);
+            crate::parser::generic::windows::WindowsServer2019ffParser::parse(&label)
         }
     }
 }
 
 #[derive(Clone, Debug)]
-struct Release(String);
+pub(crate) struct Release(String);
 
 impl Release {}
 
@@ -105,10 +95,10 @@ impl std::fmt::Display for Release {
 }
 
 #[derive(Debug)]
-struct Editions(Vec<Edition>);
+pub(crate) struct Editions(pub(crate) Vec<Edition>);
 
 impl Editions {
-    fn all() -> Self {
+    pub(crate) fn all() -> Self {
         Editions(vec![
             Edition::Datacenter,
             Edition::Standard,
@@ -127,7 +117,7 @@ impl Editions {
 }
 
 #[derive(PartialEq, Debug)]
-enum Edition {
+pub(crate) enum Edition {
     Datacenter,
     Standard,
 }
@@ -145,28 +135,28 @@ impl std::fmt::Display for Edition {
 
 #[derive(PartialEq, Debug)]
 pub(crate) enum ServiceChannel {
-    LTSB,
+    LTSC,
 }
 
 impl ServiceChannel {
     #[allow(dead_code)]
     fn is_default(&self) -> bool {
         match self {
-            ServiceChannel::LTSB => true,
+            ServiceChannel::LTSC => true,
         }
     }
 }
 
 impl Default for ServiceChannel {
     fn default() -> Self {
-        ServiceChannel::LTSB
+        ServiceChannel::LTSC
     }
 }
 
 impl std::fmt::Display for ServiceChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
-            ServiceChannel::LTSB => "LTSB",
+            ServiceChannel::LTSC => "LTSB",
         };
 
         write!(f, "{}", out)
@@ -176,7 +166,7 @@ impl std::fmt::Display for ServiceChannel {
 impl From<&str> for ServiceChannel {
     fn from(value: &str) -> Self {
         match value {
-            _ => ServiceChannel::LTSB,
+            _ => ServiceChannel::LTSC,
         }
     }
 }

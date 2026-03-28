@@ -91,6 +91,36 @@ pub(crate) struct Editions(pub(crate) Vec<Edition>);
 
 impl Editions {
     #[allow(dead_code)]
+    pub(crate) fn all() -> Self {
+        let mut editions = Editions::all_e();
+        editions.0.append(&mut Editions::all_iot().0);
+        editions.0.append(&mut Editions::all_w().0);
+
+        Editions(editions.0)
+    }
+
+    pub(crate) fn all_e() -> Self {
+        Editions(vec![
+            Edition::Education,
+            Edition::Enterprise,
+            Edition::EnterpriseMultiSession,
+        ])
+    }
+
+    pub(crate) fn all_iot() -> Self {
+        Editions(vec![Edition::IoTEnterprise])
+    }
+
+    pub(crate) fn all_w() -> Self {
+        Editions(vec![
+            Edition::Home,
+            Edition::Pro,
+            Edition::ProEducation,
+            Edition::ProForWorkstations,
+        ])
+    }
+    
+    #[allow(dead_code)]
     pub(crate) fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
     }

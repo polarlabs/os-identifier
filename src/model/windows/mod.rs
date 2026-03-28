@@ -26,7 +26,8 @@ mod windows_server_2012_r2;
 
 mod windows_server_2016;
 
-mod windows_server_2019ff;
+pub(crate) mod windows_server_2019ff;
+pub(crate) use windows_server_2019ff::WindowsServer2019ff;
 
 use windows_7::Windows7;
 use windows_8::Windows8;
@@ -38,7 +39,6 @@ use windows_server_2008_r2::WindowsServer2008R2;
 use windows_server_2012::WindowsServer2012;
 use windows_server_2012_r2::WindowsServer2012R2;
 use windows_server_2016::WindowsServer2016;
-use windows_server_2019ff::WindowsServer2019ff;
 use windows_vista::WindowsVista;
 use windows_xp::WindowsXP;
 

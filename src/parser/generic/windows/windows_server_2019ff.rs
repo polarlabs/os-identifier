@@ -1,24 +1,24 @@
 use crate::{model, util};
-use crate::model::windows_11::{Edition, Editions, Release, ServiceChannel};
+use crate::model::windows_server_2019ff::{Edition, Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
 
-const ERR_UNKNOWN_RELEASE: &str = "Not a Windows 11 release.";
-const ERR_UNKNOWN_EDITION: &str = "Not a Windows 11 edition.";
-const ERR_UNKNOWN_SERVICE_CHANNEL: &str = "Not a Windows 11 service channel.";
+const ERR_UNKNOWN_RELEASE: &str = "Not a Windows Server release.";
+const ERR_UNKNOWN_EDITION: &str = "Not a Windows Server edition.";
+const ERR_UNKNOWN_SERVICE_CHANNEL: &str = "Not a Windows Server service channel.";
 
-include!(concat!(env!("OUT_DIR"), "/windows_11_build_to_release_map.rs"));
+include!(concat!(env!("OUT_DIR"), "/windows_server_2019ff_build_to_release_map.rs"));
 
-pub(crate) struct Windows11Parser();
+pub(crate) struct WindowsServer2019ffParser();
 
-impl Windows11Parser {
-    pub(crate) fn parse(label: &GenericLabel) -> Result<model::Windows11, String> {
-        let release = Release::try_from(label)?;
+impl WindowsServer2019ffParser {
+    pub(crate) fn parse(label: &GenericLabel) -> Result<model::WindowsServer2019ff, String> {
+        let version = Release::try_from(label)?;
         let edition = Edition::try_from(label)?;
         let service_channel = ServiceChannel::try_from(label).unwrap_or_default();
 
-        let windows11 = model::Windows11::build(release, service_channel).editions(Editions(vec![edition]));
+        let windows = model::WindowsServer2019ff::build(&version.to_string(), None, service_channel).editions(Editions(vec![edition]));
 
-        Ok(windows11)
+        Ok(windows)
     }
 }
 
@@ -50,14 +50,10 @@ impl<'a> TryFrom<&GenericLabel<'a>> for Edition {
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
         let value = value.raw;
 
-        if crate::util::contains_any_word(value, &["Education Edition", "Education"]) {
-            Ok(Edition::Education)
-        } else if crate::util::contains_any_word(value, &["Enterprise Edition", "Enterprise"]) {
-            Ok(Edition::Enterprise)
-        } else if crate::util::contains_any_word(value, &["Home Edition", "Home"]) {
-            Ok(Edition::Home)
-        } else if crate::util::contains_any_word(value, &["Professional Edition", "Professional", "Pro"]) {
-            Ok(Edition::Pro)
+        if util::contains_any_word(value, &["Standard"]) {
+            Ok(Edition::Standard)
+        } else if util::contains_any_word(value, &["Datacenter"]) {
+            Ok(Edition::Datacenter)
         } else {
             Err(String::from(ERR_UNKNOWN_EDITION))
         }
@@ -70,9 +66,7 @@ impl<'a> TryFrom<&GenericLabel<'a>> for ServiceChannel {
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
         let value = value.raw;
 
-        if util::contains_any_word(value, &["General Availability", "GA"]) {
-            Ok(ServiceChannel::GAC)
-        } else if crate::util::contains_any_word(value, &["LTS", "LTSC"]) {
+        if util::contains_any_word(value, &["LTSC"]) {
             Ok(ServiceChannel::LTSC)
         } else {
             Err(String::from(ERR_UNKNOWN_SERVICE_CHANNEL))
@@ -83,11 +77,12 @@ impl<'a> TryFrom<&GenericLabel<'a>> for ServiceChannel {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util;
 
     #[test]
     fn test_build_to_release_1() {
         let release = util::resolve_build_to_release("26100", BUILD_TO_RELEASE_MAP);
 
-        assert_eq!(release, Ok(String::from("24H2")));
+        assert_eq!(release, Ok(String::from("2025")));
     }
 }
