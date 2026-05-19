@@ -50,7 +50,7 @@ fn main() {
 
 # Supported products
 
-As of 04.03.2026 arbitrary, unstructured names are supported for Windows 10 and 11.
+As of 19.05.2026 arbitrary, unstructured names are supported for Windows 10 and 11 and Windows Server 2019ff.
 
 Regarding releases available at the endoflife.date API, the library supports any release 
 related to these products:
