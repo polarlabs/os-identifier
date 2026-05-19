@@ -1,6 +1,5 @@
 use crate::{model, util};
-use crate::model::windows_server_2019ff::{Editions, Release, ServiceChannel};
-use crate::model::WindowsServer2019ff;
+use crate::model::windows_server_2019ff::{Editions, ServiceChannel};
 use super::super::EndOfLifeLabel;
 
 const ERR_UNKNOWN_RELEASE: &str = "Not a Windows Server release.";
@@ -17,7 +16,7 @@ impl WindowsServer2019ffParser {
             if let Some(third) = label.get(2) {
                 match util::identify_release(third, RELEASE_PATTERN) {
                     Some(version) => {
-                        let windows = WindowsServer2019ff::build(&version, None, ServiceChannel::LTSC)
+                        let windows = model::WindowsServer2019ff::build(&version, None, ServiceChannel::LTSC)
                             .editions(Editions::all());
                         Ok(windows)
                     },

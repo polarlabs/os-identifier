@@ -31,8 +31,20 @@ fn test_windows_server_generic_1() {
 
     let windows = windows.unwrap();
     let canonical_names = windows.to_string();
-    println!("Result: {:?}", canonical_names);
     assert!(canonical_names.contains(&String::from("Microsoft Windows Server 2019 Standard")));
+}
+
+#[test]
+fn test_windows_server_generic_2() {
+    use os_identifier::OS;
+
+    let windows = OS::parse("Windows Server Build 26100");
+    assert!(windows.is_ok());
+
+    let windows = windows.unwrap();
+    let canonical_names = windows.to_string();
+    assert!(canonical_names.contains(&String::from("Microsoft Windows Server 2025 Standard")));
+    assert!(canonical_names.contains(&String::from("Microsoft Windows Server 2025 Datacenter")));
 }
 
 #[test]

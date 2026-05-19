@@ -13,12 +13,16 @@ pub(crate) struct WindowsServer2019ffParser();
 impl WindowsServer2019ffParser {
     pub(crate) fn parse(label: &GenericLabel) -> Result<model::WindowsServer2019ff, String> {
         let version = Release::try_from(label)?;
-        let edition = Edition::try_from(label)?;
         let service_channel = ServiceChannel::try_from(label).unwrap_or_default();
 
-        let windows = model::WindowsServer2019ff::build(&version.to_string(), None, service_channel).editions(Editions(vec![edition]));
-
-        Ok(windows)
+        match Edition::try_from(label) {
+            Ok(edition) => {
+                Ok(model::WindowsServer2019ff::build(&version.to_string(), None, service_channel).editions(Editions(vec![edition])))
+            },
+            Err(_) => {
+                Ok(model::WindowsServer2019ff::build(&version.to_string(), None, service_channel).editions(Editions::all()))
+            },
+        }
     }
 }
 
@@ -81,6 +85,13 @@ mod tests {
 
     #[test]
     fn test_build_to_release_1() {
+        let release = util::resolve_build_to_release("17763", BUILD_TO_RELEASE_MAP);
+
+        assert_eq!(release, Ok(String::from("2019")));
+    }
+
+    #[test]
+    fn test_build_to_release_2() {
         let release = util::resolve_build_to_release("26100", BUILD_TO_RELEASE_MAP);
 
         assert_eq!(release, Ok(String::from("2025")));

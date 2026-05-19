@@ -1,10 +1,9 @@
-use crate::model::Windows10;
-
-//
-//
 const PRODUCT: &str = "Windows Server";
 const VENDOR: &str = "Microsoft";
 
+/// WindowsServer2019ff covers Windows Server 2019, 2022, and 2025.
+///
+/// see [Windows Server release information](https://learn.microsoft.com/en-us/windows/release-health/windows-server-release-info)
 #[derive(Debug)]
 pub(crate) struct WindowsServer2019ff {
     vendor: String,
