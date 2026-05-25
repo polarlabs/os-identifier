@@ -17,6 +17,18 @@ impl WindowsXP {
     pub(super) fn product(&self) -> &str {
         self.product.as_str()
     }
+
+    pub(super) fn release(&self) -> String {
+        self.release.to_string()
+    }
+
+    pub(super) fn is_enterprise(&self) -> bool {
+        false
+    }
+
+    pub(super) fn is_lts(&self) -> bool {
+        false
+    }
     
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self

@@ -17,6 +17,19 @@ impl Windows8 {
     pub(super) fn product(&self) -> &str {
         self.product.as_str()
     }
+
+    pub(super) fn release(&self) -> String {
+        "".to_string()
+    }
+
+    pub(super) fn is_enterprise(&self) -> bool {
+        self.editions.contains(Edition::Enterprise) ||
+            self.editions.contains(Edition::EnterpriseN)
+    }
+
+    pub(super) fn is_lts(&self) -> bool {
+        self.is_enterprise()
+    }
     
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self

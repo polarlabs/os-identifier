@@ -37,6 +37,24 @@ impl Windows10 {
         self.product.as_str()
     }
 
+    pub(super) fn release(&self) -> String {
+        self.release.to_string()
+    }
+
+    pub(super) fn is_enterprise(&self) -> bool {
+        match &self.editions {
+            None => false,
+            Some(editions) => {
+                editions.contains(Edition::Enterprise) ||
+                    editions.contains(Edition::EnterpriseIoT)
+            }
+        }
+    }
+    
+    pub(super) fn is_lts(&self) -> bool {
+        self.service_channel.is_lts()
+    }
+
     pub(crate) fn iot_core(mut self, product: &str) -> Windows10 {
         self.product = product.to_string();
         self

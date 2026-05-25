@@ -29,6 +29,20 @@ impl Windows11 {
         self.product.as_str()
     }
 
+    pub(super) fn release(&self) -> String {
+        self.release.to_string()
+    }
+    
+    pub(super) fn is_enterprise(&self) -> bool {
+        self.editions.contains(Edition::Enterprise) ||
+            self.editions.contains(Edition::EnterpriseMultiSession) ||
+            self.editions.contains(Edition::IoTEnterprise)
+    }
+
+    pub(super) fn is_lts(&self) -> bool {
+        self.service_channel.is_lts()
+    }
+
     pub(crate) fn editions(mut self, editions: Editions) -> Windows11 {
         self.editions = editions;
         self
@@ -171,6 +185,13 @@ impl ServiceChannel {
         match self {
             ServiceChannel::GAC => true,
             ServiceChannel::LTSC => false,
+        }
+    }
+
+    fn is_lts(&self) -> bool {
+        match self {
+            ServiceChannel::GAC => false,
+            ServiceChannel::LTSC => true,
         }
     }
 }

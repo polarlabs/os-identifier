@@ -33,9 +33,24 @@ impl WindowsServer2019ff {
         self.product.as_str()
     }
 
+    pub(super) fn release(&self) -> String {
+        match &self.release {
+            Some(release) => release.to_string(),
+            None => "".to_string(),
+        }
+    }
+
     pub(crate) fn editions(mut self, editions: Editions) -> WindowsServer2019ff {
         self.editions = editions;
         self
+    }
+
+    pub(super) fn is_enterprise(&self) -> bool {
+        false
+    }
+
+    pub(super) fn is_lts(&self) -> bool {
+        self.service_channel.is_lts()
     }
     
     pub(super) fn to_string(&self) -> Vec<String> {
@@ -140,6 +155,12 @@ pub(crate) enum ServiceChannel {
 impl ServiceChannel {
     #[allow(dead_code)]
     fn is_default(&self) -> bool {
+        match self {
+            ServiceChannel::LTSC => true,
+        }
+    }
+
+    fn is_lts(&self) -> bool {
         match self {
             ServiceChannel::LTSC => true,
         }

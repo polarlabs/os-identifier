@@ -121,6 +121,66 @@ impl Windows {
             Windows::WindowsXP(w) => String::from(w.product()),
         }
     }
+
+    pub fn release(&self) -> String {
+        match self {
+            Windows::Windows7(w) => String::from(w.release()),
+            Windows::Windows8(w) => String::from(w.release()),
+            Windows::Windows10(w) => String::from(w.release()),
+            Windows::Windows11(w) => String::from(w.release()),
+            Windows::Windows2000(w) => String::from(w.release()),
+            Windows::WindowsServer1709ff(w) => String::from(w.release()),
+            Windows::WindowsServer2003(w) => String::from(w.release()),
+            Windows::WindowsServer2008(w) => String::from(w.release()),
+            Windows::WindowsServer2008R2(w) => String::from(w.release()),
+            Windows::WindowsServer2012(w) => String::from(w.release()),
+            Windows::WindowsServer2012R2(w) => String::from(w.release()),
+            Windows::WindowsServer2016(w) => String::from(w.release()),
+            Windows::WindowsServer2019ff(w) => String::from(w.release()),
+            Windows::WindowsVista(w) => String::from(w.release()),
+            Windows::WindowsXP(w) => String::from(w.release()),
+        }
+    }
+    
+    pub fn is_enterprise(&self) -> bool {
+        match self {
+            Windows::Windows7(w) => w.is_enterprise(),
+            Windows::Windows8(w) => w.is_enterprise(),
+            Windows::Windows10(w) => w.is_enterprise(),
+            Windows::Windows11(w) => w.is_enterprise(),
+            Windows::Windows2000(w) => w.is_enterprise(),
+            Windows::WindowsServer1709ff(w) => w.is_enterprise(),
+            Windows::WindowsServer2003(w) => w.is_enterprise(),
+            Windows::WindowsServer2008(w) => w.is_enterprise(),
+            Windows::WindowsServer2008R2(w) => w.is_enterprise(),
+            Windows::WindowsServer2012(w) => w.is_enterprise(),
+            Windows::WindowsServer2012R2(w) => w.is_enterprise(),
+            Windows::WindowsServer2016(w) => w.is_enterprise(),
+            Windows::WindowsServer2019ff(w) => w.is_enterprise(),
+            Windows::WindowsVista(w) => w.is_enterprise(),
+            Windows::WindowsXP(w) => w.is_enterprise(),
+        }
+    }
+
+    pub fn is_lts(&self) -> bool {
+        match self {
+            Windows::Windows7(w) => w.is_lts(),
+            Windows::Windows8(w) => w.is_lts(),
+            Windows::Windows10(w) => w.is_lts(),
+            Windows::Windows11(w) => w.is_lts(),
+            Windows::Windows2000(w) => w.is_lts(),
+            Windows::WindowsServer1709ff(w) => w.is_lts(),
+            Windows::WindowsServer2003(w) => w.is_lts(),
+            Windows::WindowsServer2008(w) => w.is_lts(),
+            Windows::WindowsServer2008R2(w) => w.is_lts(),
+            Windows::WindowsServer2012(w) => w.is_lts(),
+            Windows::WindowsServer2012R2(w) => w.is_lts(),
+            Windows::WindowsServer2016(w) => w.is_lts(),
+            Windows::WindowsServer2019ff(w) => w.is_lts(),
+            Windows::WindowsVista(w) => w.is_lts(),
+            Windows::WindowsXP(w) => w.is_lts(),
+        }
+    }
 }
 
 impl TryFrom<&str> for Windows {

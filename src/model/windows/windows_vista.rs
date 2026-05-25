@@ -17,6 +17,20 @@ impl WindowsVista {
     pub(super) fn product(&self) -> &str {
         self.product.as_str()
     }
+
+    pub(super) fn release(&self) -> String {
+        self.release.to_string()
+    }
+    
+    pub(super) fn is_enterprise(&self) -> bool {
+        self.editions.contains(Edition::Enterprise)
+            || self.editions.contains(Edition::Enterprise64bit)
+            || self.editions.contains(Edition::EnterpriseX64)
+    }
+    
+    pub(super) fn is_lts(&self) -> bool {
+        self.is_enterprise()
+    }
     
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = self
