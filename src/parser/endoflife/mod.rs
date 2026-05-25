@@ -1,3 +1,4 @@
+pub(crate) mod linux;
 pub(crate) mod windows;
 
 use crate::util;
@@ -16,8 +17,17 @@ impl EndOfLifeLabel<'_> {
     pub fn len(&self) -> usize {
         self.split.len()
     }
+    
+    pub fn starts_with(&self, value: &str) -> bool {
+        self.raw.starts_with(value)
+    }
+    
+    pub fn last(&self) -> Option<&str> {
+        self.split.last().map(|s| *s)
+    }
 }
 
+// Create an EndOfLifeLabel from an arbitrary string.
 impl<'a> TryFrom<&'a str> for EndOfLifeLabel<'a> {
     type Error = String;
 

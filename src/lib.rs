@@ -23,6 +23,7 @@
 //! ```
 mod model;
 pub use model::OS;
+pub use model::Linux;
 pub use model::Windows;
 
 mod parser;
