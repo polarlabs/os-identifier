@@ -8,7 +8,7 @@ impl DebianParser {
     pub(crate) fn parse(label: &EndOfLifeLabel) -> Result<model::Debian, String> {
         if label.starts_with("debian-") {
             if let Some(last) = label.last() {
-                match (util::identify_release(last, r#"[0-9]+"#), util::identify_release(last, r#"[0-9]+\.[0-9]+"#)) {
+                match (util::identify_release(last, r#"[0-9]+"#), util::identify_release(last, r#"[0-9]+\.[0-9\.]+"#)) {
                     // Major release only
                     (Some(major), None) => {
                         let release = Release::from(major.as_str());

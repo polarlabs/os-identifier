@@ -32,12 +32,12 @@ impl Debian {
     pub(super) fn release(&self) -> String {
         self.release.to_string()
     }
-    
+
     pub(crate) fn editions(mut self, editions: Editions) -> Debian {
         self.editions = editions;
         self
     }
-    
+
     pub(crate) fn is_enterprise(&self) -> bool {
         false
     }
@@ -45,7 +45,7 @@ impl Debian {
     pub(crate) fn is_lts(&self) -> bool {
         false
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
         vec![format!(
             "{} {}",
@@ -69,22 +69,6 @@ impl TryFrom<&str> for Debian {
 
 #[derive(Debug)]
 pub(crate) struct Release(String);
-
-impl Release {
-    fn major_is_even(&self) -> bool {
-        let release: Vec<&str> = self.0.split('.').collect();
-        let major = release[0];
-        if major.parse::<i32>().unwrap() % 2 == 0 {
-            true
-        } else {
-            false
-        }
-    }
-
-    fn ends_with_04(&self) -> bool {
-        self.0.ends_with(".04")
-    }
-}
 
 impl From<&str> for Release {
     fn from(value: &str) -> Self {
@@ -188,6 +172,7 @@ mod tests {
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_2() {
         let label = Debian::try_from("debian-6").unwrap();
 
@@ -199,6 +184,7 @@ mod tests {
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_3() {
         let label = Debian::try_from("debian-13.5").unwrap();
 
@@ -210,6 +196,7 @@ mod tests {
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_4() {
         let label = Debian::try_from("debian-6.0.10").unwrap();
 

@@ -174,6 +174,7 @@ mod tests {
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_2() {
         let label = OracleLinux::try_from("oracle-linux-9").unwrap();
 
@@ -185,23 +186,25 @@ mod tests {
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_3() {
         let label = OracleLinux::try_from("oracle-linux-10.1").unwrap();
 
         assert_eq!(label.vendor, "Oracle".to_string());
         assert_eq!(label.product, "Oracle Linux".to_string());
-        assert_eq!(label.release.to_string(), "9.6".to_string());
+        assert_eq!(label.release.to_string(), "10.1".to_string());
 
         assert_eq!(label.editions.len(), Editions::all().len());
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_4() {
         let label = OracleLinux::try_from("oracle-linux-5.11").unwrap();
 
         assert_eq!(label.vendor, "Oracle".to_string());
         assert_eq!(label.product, "Oracle Linux".to_string());
-        assert_eq!(label.release.to_string(), "9.6".to_string());
+        assert_eq!(label.release.to_string(), "5.11".to_string());
 
         assert_eq!(label.editions.len(), Editions::all().len());
         assert_eq!(label.service_channel, ServiceChannel::LTS);

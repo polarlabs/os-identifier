@@ -255,6 +255,7 @@ mod tests {
         assert_eq!(label.service_channel, ServiceChannel::LTS);
     }
 
+    #[test]
     fn test_from_string_2() {
         let label = Ubuntu::try_from("ubuntu-linux-24.04").unwrap();
 
