@@ -10,7 +10,9 @@ Inventory tools or software provisioning tools often use names like the followin
 instance. This library converts strings like this into a standardized form.
 
 ```rust
-pub fn main() { 
+# use os_identifier::OS;
+
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
   let os = OS::parse("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
 
   assert_eq!(os.vendor(), "Microsoft".to_string());
@@ -19,22 +21,25 @@ pub fn main() {
 
   assert!(os.is_enterprise());
   assert!(!os.is_lts());
-}
+# Ok(())
+# }
 ```
 
-```rust
-use os_identifier::Linux;
 
-pub fn main() {
+```rust
+# use os_identifier::OS;
+
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
   let os = OS::parse("Ubuntu 24.04 LTS (Noble Numbat)").unwrap();
 
   assert_eq!(os.vendor(), "Canonical".to_string());
   assert_eq!(os.product(), "Ubuntu Linux".to_string());
-  assert_eq!(os.release(), "24H2".to_string());
+  assert_eq!(os.release(), "24.04".to_string());
 
   assert!(os.is_enterprise());
   assert!(os.is_lts());
-}
+# Ok(())
+# }
 ```
 
 # Structured input from endoflife.date API
@@ -51,16 +56,19 @@ This library resolves Windows releases referred to as "11-24h2-w" into a list of
 covered by this name.
 
 ```rust
-fn main() {
-    let os = OS::parse("windows-11-24h2-e-lts").unwrap();
+# use os_identifier::OS;
 
-    assert_eq!(os.vendor(), "Microsoft".to_string());
-    assert_eq!(os.product(), "Windows 11".to_string());
-    assert_eq!(os.release(), "24H2".to_string());
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+  let os = OS::parse("windows-11-24h2-e-lts").unwrap();
 
-    assert_eq!(os.is_enterprise());
-    assert_eq!(os.is_lts());
-}
+  assert_eq!(os.vendor(), "Microsoft".to_string());
+  assert_eq!(os.product(), "Windows 11".to_string());
+  assert_eq!(os.release(), "24H2".to_string());
+
+  assert_eq!(os.is_enterprise(), true);
+  assert_eq!(os.is_lts(), true);
+# Ok(())
+# }
 ```
 
 # Supported products

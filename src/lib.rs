@@ -29,3 +29,8 @@ pub use model::Windows;
 mod parser;
 
 mod util;
+
+// Include tests defined in README.md
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+pub struct ReadmeDoctests;
