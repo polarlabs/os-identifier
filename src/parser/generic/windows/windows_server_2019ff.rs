@@ -1,12 +1,15 @@
-use crate::{model, util};
 use crate::model::windows_server_2019ff::{Edition, Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
+use crate::{model, util};
 
 const ERR_UNKNOWN_RELEASE: &str = "Not a Windows Server release.";
 const ERR_UNKNOWN_EDITION: &str = "Not a Windows Server edition.";
 const ERR_UNKNOWN_SERVICE_CHANNEL: &str = "Not a Windows Server service channel.";
 
-include!(concat!(env!("OUT_DIR"), "/windows_server_2019ff_build_to_release_map.rs"));
+include!(concat!(
+    env!("OUT_DIR"),
+    "/windows_server_2019ff_build_to_release_map.rs"
+));
 
 pub(crate) struct WindowsServer2019ffParser();
 
@@ -17,11 +20,17 @@ impl WindowsServer2019ffParser {
 
         match Edition::try_from(label) {
             Ok(edition) => {
-                Ok(model::WindowsServer2019ff::build(&version.to_string(), None, service_channel).editions(Editions(vec![edition])))
-            },
+                Ok(
+                    model::WindowsServer2019ff::build(&version.to_string(), None, service_channel)
+                        .editions(Editions(vec![edition])),
+                )
+            }
             Err(_) => {
-                Ok(model::WindowsServer2019ff::build(&version.to_string(), None, service_channel).editions(Editions::all()))
-            },
+                Ok(
+                    model::WindowsServer2019ff::build(&version.to_string(), None, service_channel)
+                        .editions(Editions::all()),
+                )
+            }
         }
     }
 }
@@ -34,11 +43,10 @@ impl<'a> TryFrom<&GenericLabel<'a>> for Release {
 
         // Look for a build number or identify the release
         if let Some(build) = util::find_number_with_digits(value, 5) {
-            util::resolve_build_to_release(build.as_str(), BUILD_TO_RELEASE_MAP)
-                .map_or_else(
-                    |_e| Err(String::from(ERR_UNKNOWN_RELEASE)),
-                    |release| Ok(Release::from(release.as_str()))
-                )
+            util::resolve_build_to_release(build.as_str(), BUILD_TO_RELEASE_MAP).map_or_else(
+                |_e| Err(String::from(ERR_UNKNOWN_RELEASE)),
+                |release| Ok(Release::from(release.as_str())),
+            )
         } else {
             match util::identify_release(value, RELEASE_PATTERN) {
                 Some(release) => Ok(Release::from(release.as_str())),

@@ -3,7 +3,6 @@
 // showing what we know about the OS not only the string.
 // Update introducing sentence to match README.md
 
-
 //! # OS Identifier
 //!
 //! OS Identifier resolves product / release names of operating systems used by
@@ -22,8 +21,8 @@
 //! }
 //! ```
 mod model;
-pub use model::OS;
 pub use model::Linux;
+pub use model::OS;
 pub use model::Windows;
 
 mod parser;

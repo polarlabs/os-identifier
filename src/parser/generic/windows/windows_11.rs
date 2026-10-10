@@ -1,12 +1,15 @@
-use crate::{model, util};
 use crate::model::windows_11::{Edition, Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
+use crate::{model, util};
 
 const ERR_UNKNOWN_RELEASE: &str = "Not a Windows 11 release.";
 const ERR_UNKNOWN_EDITION: &str = "Not a Windows 11 edition.";
 const ERR_UNKNOWN_SERVICE_CHANNEL: &str = "Not a Windows 11 service channel.";
 
-include!(concat!(env!("OUT_DIR"), "/windows_11_build_to_release_map.rs"));
+include!(concat!(
+    env!("OUT_DIR"),
+    "/windows_11_build_to_release_map.rs"
+));
 
 pub(crate) struct Windows11Parser();
 
@@ -16,7 +19,8 @@ impl Windows11Parser {
         let edition = Edition::try_from(label)?;
         let service_channel = ServiceChannel::try_from(label).unwrap_or_default();
 
-        let windows11 = model::Windows11::build(release, service_channel).editions(Editions(vec![edition]));
+        let windows11 =
+            model::Windows11::build(release, service_channel).editions(Editions(vec![edition]));
 
         Ok(windows11)
     }
@@ -30,11 +34,10 @@ impl<'a> TryFrom<&GenericLabel<'a>> for Release {
 
         // Look for a build number or identify the release
         if let Some(build) = util::find_number_with_digits(value, 5) {
-            util::resolve_build_to_release(build.as_str(), BUILD_TO_RELEASE_MAP)
-                .map_or_else(
-                    |_e| Err(String::from(ERR_UNKNOWN_RELEASE)),
-                    |release| Ok(Release::from(release.as_str()))
-                )
+            util::resolve_build_to_release(build.as_str(), BUILD_TO_RELEASE_MAP).map_or_else(
+                |_e| Err(String::from(ERR_UNKNOWN_RELEASE)),
+                |release| Ok(Release::from(release.as_str())),
+            )
         } else {
             match util::identify_release(value, RELEASE_PATTERN) {
                 Some(release) => Ok(Release::from(release.as_str())),
@@ -56,7 +59,10 @@ impl<'a> TryFrom<&GenericLabel<'a>> for Edition {
             Ok(Edition::Enterprise)
         } else if crate::util::contains_any_word(value, &["Home Edition", "Home"]) {
             Ok(Edition::Home)
-        } else if crate::util::contains_any_word(value, &["Professional Edition", "Professional", "Pro"]) {
+        } else if crate::util::contains_any_word(
+            value,
+            &["Professional Edition", "Professional", "Pro"],
+        ) {
             Ok(Edition::Pro)
         } else {
             Err(String::from(ERR_UNKNOWN_EDITION))

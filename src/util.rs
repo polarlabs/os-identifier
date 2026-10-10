@@ -41,9 +41,12 @@ pub fn find_number_with_digits(input: &str, digits: usize) -> Option<String> {
     re.find(input).map(|m| m.as_str().to_string())
 }
 
-pub fn resolve_build_to_release(build: &str, map: phf::Map<&'static str, &'static [&'static str]>) -> Result<String, String> {
+pub fn resolve_build_to_release(
+    build: &str,
+    map: phf::Map<&'static str, &'static [&'static str]>,
+) -> Result<String, String> {
     if let Some(release) = map.get(build) {
-        Ok(release.get(0).unwrap().to_string())
+        Ok(release.first().unwrap().to_string())
     } else {
         Err(format!("Build '{}' does not exist.", build))
     }
@@ -66,10 +69,10 @@ mod tests {
         let label3 = "2025";
         let label4 = "8.1";
 
-        assert_eq!(is_subdivided_by_dashes_only(label1), true);
-        assert_eq!(is_subdivided_by_dashes_only(label2), false);
-        assert_eq!(is_subdivided_by_dashes_only(label3), true);
-        assert_eq!(is_subdivided_by_dashes_only(label4), true);
+        assert!(is_subdivided_by_dashes_only(label1));
+        assert!(!is_subdivided_by_dashes_only(label2));
+        assert!(is_subdivided_by_dashes_only(label3));
+        assert!(is_subdivided_by_dashes_only(label4));
     }
 
     #[test]
@@ -78,8 +81,8 @@ mod tests {
         let label2 = "Windows 11 Pro 24H2";
         let word = ["Professional Edition", "Professional", "Pro"];
 
-        assert_eq!(contains_any_word(label1, &word), true);
-        assert_eq!(contains_any_word(label2, &word), true);
+        assert!(contains_any_word(label1, &word));
+        assert!(contains_any_word(label2, &word));
     }
 
     #[test]
@@ -88,8 +91,8 @@ mod tests {
         let label2 = "Windows 11 Pro 24H2";
         let word = ["Enterprise Edition", "Enterprise"];
 
-        assert_eq!(contains_any_word(label1, &word), false);
-        assert_eq!(contains_any_word(label2, &word), false);
+        assert!(!contains_any_word(label1, &word));
+        assert!(!contains_any_word(label2, &word));
     }
 
     #[test]
@@ -97,8 +100,14 @@ mod tests {
         let label1 = "Windows 11 Professional Edition 26100";
         let label2 = "Windows 11 Professional Edition 26100.4533";
 
-        assert_eq!(find_number_with_digits(label1, 5), Some(String::from("26100")));
-        assert_eq!(find_number_with_digits(label2, 5), Some(String::from("26100")));
+        assert_eq!(
+            find_number_with_digits(label1, 5),
+            Some(String::from("26100"))
+        );
+        assert_eq!(
+            find_number_with_digits(label2, 5),
+            Some(String::from("26100"))
+        );
     }
 
     #[test]
@@ -112,7 +121,10 @@ mod tests {
     fn test_identify_release_some() {
         let label1 = "Windows 11 Professional Edition 24H2";
 
-        assert_eq!(identify_release(label1, "22H2|24H2"), Some(String::from("24H2")));
+        assert_eq!(
+            identify_release(label1, "22H2|24H2"),
+            Some(String::from("24H2"))
+        );
     }
 
     #[test]

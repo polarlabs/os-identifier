@@ -98,7 +98,9 @@ fn test_windows_11_generic_2() {
 fn test_windows_11_generic_2_w_sc_ga() {
     use os_identifier::Windows;
 
-    let windows = Windows::parse("Windows 11 Professional Edition (Build 26200) (64 Bit) GA (General Availability)");
+    let windows = Windows::parse(
+        "Windows 11 Professional Edition (Build 26200) (64 Bit) GA (General Availability)",
+    );
     assert!(windows.is_ok());
 
     let windows = windows.unwrap();
@@ -163,8 +165,8 @@ fn test_windows_server_23h2() {
 
     let windows = windows.unwrap();
     let canonical_names = windows.to_string();
-    assert_eq!(canonical_names.contains(&String::from("Microsoft Windows Server Standard 23H2")), false);
-    assert_eq!(canonical_names.contains(&String::from("Microsoft Windows Server Datacenter 23H2")), true);
+    assert!(!canonical_names.contains(&String::from("Microsoft Windows Server Standard 23H2")));
+    assert!(canonical_names.contains(&String::from("Microsoft Windows Server Datacenter 23H2")));
 }
 
 #[test]
@@ -200,7 +202,9 @@ fn test_windows_server_2008() {
 
     let windows = windows.unwrap();
     let canonical_names = windows.to_string();
-    assert!(canonical_names.contains(&String::from("Microsoft Windows Server 2008 Foundation SP2")));
+    assert!(canonical_names.contains(&String::from(
+        "Microsoft Windows Server 2008 Foundation SP2"
+    )));
 }
 
 #[test]

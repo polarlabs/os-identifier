@@ -1,6 +1,6 @@
-use crate::{model, util};
 use crate::model::oracle::{Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
+use crate::{model, util};
 
 const ERR_UNKNOWN_RELEASE: &str = "Not an Oracle Linux release.";
 
@@ -12,7 +12,8 @@ impl OracleLinuxParser {
             let release = Release::try_from(label)?;
             let service_channel = ServiceChannel::from(&release);
 
-            let linux = model::OracleLinux::build(release, service_channel).editions(Editions::all());
+            let linux =
+                model::OracleLinux::build(release, service_channel).editions(Editions::all());
 
             Ok(linux)
         } else {

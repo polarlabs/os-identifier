@@ -1,6 +1,6 @@
-use crate::{model, util};
 use crate::model::rhel::{Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
+use crate::{model, util};
 
 const ERR_UNKNOWN_RELEASE: &str = "Not an RHEL release.";
 
@@ -12,7 +12,8 @@ impl RedHatEnterpriseLinuxParser {
             let release = Release::try_from(label)?;
             let service_channel = ServiceChannel::from(&release);
 
-            let rhel = model::RedHatEnterpriseLinux::build(release, service_channel).editions(Editions::all());
+            let rhel = model::RedHatEnterpriseLinux::build(release, service_channel)
+                .editions(Editions::all());
 
             Ok(rhel)
         } else {

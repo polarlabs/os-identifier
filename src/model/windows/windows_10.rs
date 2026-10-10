@@ -45,12 +45,11 @@ impl Windows10 {
         match &self.editions {
             None => false,
             Some(editions) => {
-                editions.contains(Edition::Enterprise) ||
-                    editions.contains(Edition::EnterpriseIoT)
+                editions.contains(Edition::Enterprise) || editions.contains(Edition::EnterpriseIoT)
             }
         }
     }
-    
+
     pub(super) fn is_lts(&self) -> bool {
         self.service_channel.is_lts()
     }
@@ -67,7 +66,7 @@ impl Windows10 {
 
     pub(super) fn to_string(&self) -> Vec<String> {
         if let Some(editions) = &self.editions {
-            let out = editions
+            editions
                 .0
                 .iter()
                 .map(|edition| {
@@ -83,15 +82,10 @@ impl Windows10 {
                         )
                     }
                 })
-                .collect();
-
-            out
+                .collect()
         } else {
             let out = if self.service_channel.is_default() {
-                format!(
-                    "{} {} {}",
-                    self.vendor, self.product, self.release
-                )
+                format!("{} {} {}", self.vendor, self.product, self.release)
             } else {
                 format!(
                     "{} {} {} {}",
@@ -126,6 +120,7 @@ impl Release {
         self.0.ends_with("H1")
     }
 
+    #[allow(clippy::cmp_owned)]
     fn up_to_1607(&self) -> bool {
         self.0 <= String::from("1607")
     }
@@ -205,7 +200,7 @@ impl std::fmt::Display for Edition {
             Edition::ProForWorkstations => "Pro for Workstations",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
@@ -216,12 +211,14 @@ The primary difference between Current Branch (CB) and Current Branch for Busine
  Microsoft has since rebranded CBB as the Semi-Annual Channel (SAC) to align with its Office 365 update terminology, but the underlying deployment strategy remains focused on delayed, tested rollouts for business environments.
 
  */
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
     // Current Branch
     // CB: only used by Windows 10 1507, 1511
     // Current Branch for Business
     // CBB: only used by Windows 10 1507, 1511
+    #[default]
     GAC,
     LTSB,
     LTSC,
@@ -245,12 +242,6 @@ impl ServiceChannel {
             ServiceChannel::LTSC => true,
             ServiceChannel::SAC => false,
         }
-    }
-}
-
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::GAC
     }
 }
 
@@ -407,7 +398,10 @@ mod tests {
 
     #[test]
     fn test_from_string_arbitrary1() {
-        let label = Windows10::try_from("Windows 10 Professional Edition (Build 19045) (64 Bit) GA (General Availability)").unwrap();
+        let label = Windows10::try_from(
+            "Windows 10 Professional Edition (Build 19045) (64 Bit) GA (General Availability)",
+        )
+        .unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 10".to_string());

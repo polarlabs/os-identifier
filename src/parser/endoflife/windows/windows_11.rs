@@ -1,6 +1,6 @@
+use super::super::EndOfLifeLabel;
 use crate::model;
 use crate::model::windows_11::{Edition, Editions, Release, ServiceChannel};
-use super::super::EndOfLifeLabel;
 
 pub(crate) struct Windows11Parser();
 

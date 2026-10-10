@@ -23,23 +23,19 @@ impl Windows8 {
     }
 
     pub(super) fn is_enterprise(&self) -> bool {
-        self.editions.contains(Edition::Enterprise) ||
-            self.editions.contains(Edition::EnterpriseN)
+        self.editions.contains(Edition::Enterprise) || self.editions.contains(Edition::EnterpriseN)
     }
 
     pub(super) fn is_lts(&self) -> bool {
         self.is_enterprise()
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| format!("{} {} {edition}", self.vendor, self.product))
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -113,7 +109,7 @@ impl std::fmt::Display for Edition {
             Edition::SL => "SL",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 

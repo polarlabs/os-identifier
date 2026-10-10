@@ -9,8 +9,6 @@ pub struct GenericLabel<'a> {
 
 impl<'a> From<&'a str> for GenericLabel<'a> {
     fn from(value: &'a str) -> Self {
-            GenericLabel {
-                raw: value,
-            }
+        GenericLabel { raw: value }
     }
 }

@@ -1,6 +1,6 @@
-use crate::{model, util};
-use crate::model::ubuntu::{Editions, Release, ServiceChannel};
 use super::super::EndOfLifeLabel;
+use crate::model::ubuntu::{Editions, Release, ServiceChannel};
+use crate::{model, util};
 
 pub(crate) struct UbuntuParser();
 
@@ -12,7 +12,8 @@ impl UbuntuParser {
                     let release = Release::from(release.as_str());
                     let service_channel = ServiceChannel::from(&release);
 
-                    let ubuntu = model::Ubuntu::build(release, service_channel).editions(Editions::all());
+                    let ubuntu =
+                        model::Ubuntu::build(release, service_channel).editions(Editions::all());
                     Ok(ubuntu)
                 } else {
                     Err(String::from("Not Ubuntu."))

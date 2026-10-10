@@ -36,29 +36,20 @@ impl WindowsServer2008R2 {
     pub(super) fn is_lts(&self) -> bool {
         self.service_channel.is_lts()
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
                 if self.release.is_none() {
-                    format!(
-                        "{} {} {edition}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition}", self.vendor, self.product)
                 } else {
                     let release = self.release.clone().unwrap();
-                    format!(
-                        "{} {} {edition} {release}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition} {release}", self.vendor, self.product)
                 }
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -67,10 +58,12 @@ impl TryFrom<&str> for WindowsServer2008R2 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
-        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
+        let parts: Vec<&str> = parts.iter().skip(2).copied().collect();
 
-        if let Some(first) = parts.get(0) && let Some(second) = parts.get(1) {
-            if ! (*first == "2008" && *second == "r2") {
+        if let Some(first) = parts.first()
+            && let Some(second) = parts.get(1)
+        {
+            if !(*first == "2008" && *second == "r2") {
                 Err(String::from("Not Windows Server 2008 R2."))
             } else {
                 let vendor = VENDOR.to_string();
@@ -146,6 +139,7 @@ impl Editions {
 }
 
 #[derive(PartialEq, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 enum Edition {
     Datacenter,
     Enterprise,
@@ -166,12 +160,14 @@ impl std::fmt::Display for Edition {
             Edition::Web => "Web",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     LTSC,
 }
 
@@ -190,12 +186,6 @@ impl ServiceChannel {
     }
 }
 
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::LTSC
-    }
-}
-
 impl std::fmt::Display for ServiceChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
@@ -207,10 +197,8 @@ impl std::fmt::Display for ServiceChannel {
 }
 
 impl From<&str> for ServiceChannel {
-    fn from(value: &str) -> Self {
-        match value {
-            _ => ServiceChannel::LTSC,
-        }
+    fn from(_value: &str) -> Self {
+        ServiceChannel::LTSC
     }
 }
 

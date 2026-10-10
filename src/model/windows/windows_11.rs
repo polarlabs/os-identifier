@@ -20,7 +20,7 @@ impl Windows11 {
             service_channel,
         }
     }
-    
+
     pub(super) fn vendor(&self) -> &str {
         self.vendor.as_str()
     }
@@ -32,11 +32,11 @@ impl Windows11 {
     pub(super) fn release(&self) -> String {
         self.release.to_string()
     }
-    
+
     pub(super) fn is_enterprise(&self) -> bool {
-        self.editions.contains(Edition::Enterprise) ||
-            self.editions.contains(Edition::EnterpriseMultiSession) ||
-            self.editions.contains(Edition::IoTEnterprise)
+        self.editions.contains(Edition::Enterprise)
+            || self.editions.contains(Edition::EnterpriseMultiSession)
+            || self.editions.contains(Edition::IoTEnterprise)
     }
 
     pub(super) fn is_lts(&self) -> bool {
@@ -49,8 +49,7 @@ impl Windows11 {
     }
 
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
@@ -66,9 +65,7 @@ impl Windows11 {
                     )
                 }
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -133,7 +130,7 @@ impl Editions {
             Edition::ProForWorkstations,
         ])
     }
-    
+
     #[allow(dead_code)]
     pub(crate) fn contains(&self, edition: Edition) -> bool {
         self.0.contains(&edition)
@@ -170,12 +167,14 @@ impl std::fmt::Display for Edition {
             Edition::ProForWorkstations => "Pro for Workstations",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     GAC,
     LTSC,
 }
@@ -202,12 +201,6 @@ impl From<&str> for ServiceChannel {
             "lts" => ServiceChannel::LTSC,
             _ => ServiceChannel::GAC,
         }
-    }
-}
-
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::GAC
     }
 }
 
@@ -276,7 +269,10 @@ mod tests {
 
     #[test]
     fn test_from_string_arbitrary1() {
-        let label = Windows11::try_from("Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+        let label = Windows11::try_from(
+            "Windows 11 Professional Edition (Build 26100) (64 Bit) GA (General Availability)",
+        )
+        .unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());
@@ -288,7 +284,10 @@ mod tests {
 
     #[test]
     fn test_from_string_arbitrary2() {
-        let label = Windows11::try_from("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+        let label = Windows11::try_from(
+            "Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)",
+        )
+        .unwrap();
 
         assert_eq!(label.vendor, "Microsoft".to_string());
         assert_eq!(label.product, "Windows 11".to_string());

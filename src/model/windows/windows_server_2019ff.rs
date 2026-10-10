@@ -15,10 +15,14 @@ pub(crate) struct WindowsServer2019ff {
 }
 
 impl WindowsServer2019ff {
-    pub(crate) fn build(product: &str, release: Option<Release>, service_channel: ServiceChannel) -> WindowsServer2019ff {
+    pub(crate) fn build(
+        product: &str,
+        release: Option<Release>,
+        service_channel: ServiceChannel,
+    ) -> WindowsServer2019ff {
         WindowsServer2019ff {
             vendor: VENDOR.to_string(),
-            product: format!("{} {}", PRODUCT.to_string(), product),
+            product: format!("{} {}", PRODUCT, product),
             editions: Editions(vec![]),
             release,
             service_channel,
@@ -52,29 +56,20 @@ impl WindowsServer2019ff {
     pub(super) fn is_lts(&self) -> bool {
         self.service_channel.is_lts()
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
                 if self.release.is_none() {
-                    format!(
-                        "{} {} {edition}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition}", self.vendor, self.product)
                 } else {
                     let release = self.release.clone().unwrap();
-                    format!(
-                        "{} {} {edition} {release}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition} {release}", self.vendor, self.product)
                 }
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -113,10 +108,7 @@ pub(crate) struct Editions(pub(crate) Vec<Edition>);
 
 impl Editions {
     pub(crate) fn all() -> Self {
-        Editions(vec![
-            Edition::Datacenter,
-            Edition::Standard,
-        ])
+        Editions(vec![Edition::Datacenter, Edition::Standard])
     }
 
     #[allow(dead_code)]
@@ -143,12 +135,14 @@ impl std::fmt::Display for Edition {
             Edition::Standard => "Standard",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     LTSC,
 }
 
@@ -167,12 +161,6 @@ impl ServiceChannel {
     }
 }
 
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::LTSC
-    }
-}
-
 impl std::fmt::Display for ServiceChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
@@ -184,10 +172,8 @@ impl std::fmt::Display for ServiceChannel {
 }
 
 impl From<&str> for ServiceChannel {
-    fn from(value: &str) -> Self {
-        match value {
-            _ => ServiceChannel::LTSC,
-        }
+    fn from(_value: &str) -> Self {
+        ServiceChannel::LTSC
     }
 }
 

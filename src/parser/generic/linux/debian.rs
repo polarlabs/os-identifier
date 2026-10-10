@@ -1,6 +1,6 @@
-use crate::{model, util};
 use crate::model::debian::{Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
+use crate::{model, util};
 
 const ERR_UNKNOWN_RELEASE: &str = "Not a Debian Linux release.";
 
@@ -27,7 +27,10 @@ impl<'a> TryFrom<&GenericLabel<'a>> for Release {
     fn try_from(value: &GenericLabel<'a>) -> Result<Self, Self::Error> {
         let value = value.raw;
 
-        match (util::identify_release(value, r#"[0-9]+"#), util::identify_release(value, r#"[0-9]+\.[0-9\.]+"#)) {
+        match (
+            util::identify_release(value, r#"[0-9]+"#),
+            util::identify_release(value, r#"[0-9]+\.[0-9\.]+"#),
+        ) {
             (Some(major), None) => Ok(Release::from(major.as_str())),
             (_, Some(minor)) => Ok(Release::from(minor.as_str())),
             (_, _) => Err(format!("{} ({})", String::from(ERR_UNKNOWN_RELEASE), value)),

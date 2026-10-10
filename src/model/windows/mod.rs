@@ -124,24 +124,24 @@ impl Windows {
 
     pub fn release(&self) -> String {
         match self {
-            Windows::Windows7(w) => String::from(w.release()),
-            Windows::Windows8(w) => String::from(w.release()),
-            Windows::Windows10(w) => String::from(w.release()),
-            Windows::Windows11(w) => String::from(w.release()),
-            Windows::Windows2000(w) => String::from(w.release()),
-            Windows::WindowsServer1709ff(w) => String::from(w.release()),
-            Windows::WindowsServer2003(w) => String::from(w.release()),
-            Windows::WindowsServer2008(w) => String::from(w.release()),
-            Windows::WindowsServer2008R2(w) => String::from(w.release()),
-            Windows::WindowsServer2012(w) => String::from(w.release()),
-            Windows::WindowsServer2012R2(w) => String::from(w.release()),
-            Windows::WindowsServer2016(w) => String::from(w.release()),
-            Windows::WindowsServer2019ff(w) => String::from(w.release()),
-            Windows::WindowsVista(w) => String::from(w.release()),
-            Windows::WindowsXP(w) => String::from(w.release()),
+            Windows::Windows7(w) => w.release(),
+            Windows::Windows8(w) => w.release(),
+            Windows::Windows10(w) => w.release(),
+            Windows::Windows11(w) => w.release(),
+            Windows::Windows2000(w) => w.release(),
+            Windows::WindowsServer1709ff(w) => w.release(),
+            Windows::WindowsServer2003(w) => w.release(),
+            Windows::WindowsServer2008(w) => w.release(),
+            Windows::WindowsServer2008R2(w) => w.release(),
+            Windows::WindowsServer2012(w) => w.release(),
+            Windows::WindowsServer2012R2(w) => w.release(),
+            Windows::WindowsServer2016(w) => w.release(),
+            Windows::WindowsServer2019ff(w) => w.release(),
+            Windows::WindowsVista(w) => w.release(),
+            Windows::WindowsXP(w) => w.release(),
         }
     }
-    
+
     pub fn is_enterprise(&self) -> bool {
         match self {
             Windows::Windows7(w) => w.is_enterprise(),

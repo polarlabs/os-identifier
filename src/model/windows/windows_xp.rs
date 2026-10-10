@@ -29,10 +29,9 @@ impl WindowsXP {
     pub(super) fn is_lts(&self) -> bool {
         false
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
@@ -41,9 +40,7 @@ impl WindowsXP {
                     self.vendor, self.product, self.release
                 )
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -52,9 +49,9 @@ impl TryFrom<&str> for WindowsXP {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
-        let parts: Vec<&str> = parts.iter().skip(1).map(|&s| s).collect();
+        let parts: Vec<&str> = parts.iter().skip(1).copied().collect();
 
-        if let Some(first) = parts.get(0) {
+        if let Some(first) = parts.first() {
             if *first != "5" {
                 Err(String::from("Not Windows XP."))
             } else {
@@ -100,6 +97,7 @@ enum Release {
 impl TryFrom<&str> for Release {
     type Error = String;
 
+    #[allow(clippy::match_str_case_mismatch)]
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value.to_uppercase().as_str() {
             "SP1" => Ok(Release::SP1),
@@ -121,7 +119,7 @@ impl std::fmt::Display for Release {
             Release::SP3 => "SP3",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
@@ -169,7 +167,7 @@ impl std::fmt::Display for Edition {
             Edition::Starter => "Starter",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 

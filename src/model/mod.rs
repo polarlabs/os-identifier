@@ -51,7 +51,7 @@ impl OS {
             OperatingSystem::Windows(w) => w.release(),
         }
     }
-    
+
     pub fn is_enterprise(&self) -> bool {
         match &self.0 {
             OperatingSystem::Linux(l) => l.is_enterprise(),
@@ -65,15 +65,11 @@ impl OS {
             OperatingSystem::Windows(w) => w.is_lts(),
         }
     }
-    
+
     pub fn to_string(&self) -> Vec<String> {
         match &self.0 {
-            OperatingSystem::Linux(os) => {
-                os.to_string()
-            },
-            OperatingSystem::Windows(os) => {
-                os.to_string()
-            },
+            OperatingSystem::Linux(os) => os.to_string(),
+            OperatingSystem::Windows(os) => os.to_string(),
         }
     }
 }
@@ -96,7 +92,7 @@ impl Linux {
     pub fn release(&self) -> String {
         self.0.release()
     }
-    
+
     pub fn is_enterprise(&self) -> bool {
         self.0.is_enterprise()
     }
@@ -104,7 +100,7 @@ impl Linux {
     pub fn is_lts(&self) -> bool {
         self.0.is_lts()
     }
-    
+
     pub fn to_string(&self) -> Vec<String> {
         self.0.to_string()
     }
@@ -128,7 +124,7 @@ impl Windows {
     pub fn release(&self) -> String {
         self.0.release()
     }
-    
+
     pub fn is_enterprise(&self) -> bool {
         self.0.is_enterprise()
     }
@@ -136,7 +132,7 @@ impl Windows {
     pub fn is_lts(&self) -> bool {
         self.0.is_lts()
     }
-    
+
     pub fn to_string(&self) -> Vec<String> {
         self.0.to_string()
     }

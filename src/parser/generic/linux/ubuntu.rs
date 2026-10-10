@@ -1,6 +1,6 @@
-use crate::{model, util};
 use crate::model::ubuntu::{Editions, Release, ServiceChannel};
 use crate::parser::generic::GenericLabel;
+use crate::{model, util};
 
 const ERR_UNKNOWN_RELEASE: &str = "Not an Ubuntu release.";
 

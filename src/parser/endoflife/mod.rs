@@ -11,19 +11,19 @@ pub struct EndOfLifeLabel<'a> {
 
 impl EndOfLifeLabel<'_> {
     pub fn get(&self, index: usize) -> Option<&str> {
-        self.split.get(index).map(|s| *s)
+        self.split.get(index).copied()
     }
 
     pub fn len(&self) -> usize {
         self.split.len()
     }
-    
+
     pub fn starts_with(&self, value: &str) -> bool {
         self.raw.starts_with(value)
     }
-    
+
     pub fn last(&self) -> Option<&str> {
-        self.split.last().map(|s| *s)
+        self.split.last().copied()
     }
 }
 
@@ -34,10 +34,7 @@ impl<'a> TryFrom<&'a str> for EndOfLifeLabel<'a> {
     fn try_from(value: &'a str) -> Result<Self, Self::Error> {
         if util::is_subdivided_by_dashes_only(value) {
             let split = value.split('-').collect();
-            Ok(EndOfLifeLabel {
-                raw: value,
-                split,
-            })
+            Ok(EndOfLifeLabel { raw: value, split })
         } else {
             Err(String::from("Not an EOL name."))
         }

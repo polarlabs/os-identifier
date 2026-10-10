@@ -36,29 +36,20 @@ impl WindowsServer2016 {
     pub(super) fn is_lts(&self) -> bool {
         self.service_channel.is_lts()
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
                 if self.release.is_none() {
-                    format!(
-                        "{} {} {edition}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition}", self.vendor, self.product)
                 } else {
                     let release = self.release.clone().unwrap();
-                    format!(
-                        "{} {} {edition} {release}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition} {release}", self.vendor, self.product)
                 }
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -67,9 +58,9 @@ impl TryFrom<&str> for WindowsServer2016 {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
-        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
+        let parts: Vec<&str> = parts.iter().skip(2).copied().collect();
 
-        if let Some(first) = parts.get(0) {
+        if let Some(first) = parts.first() {
             if *first != "2016" {
                 Err(String::from("Not Windows Server 2016."))
             } else {
@@ -157,12 +148,14 @@ impl std::fmt::Display for Edition {
             Edition::Standard => "Standard",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     LTSB,
 }
 
@@ -181,12 +174,6 @@ impl ServiceChannel {
     }
 }
 
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::LTSB
-    }
-}
-
 impl std::fmt::Display for ServiceChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
@@ -198,10 +185,8 @@ impl std::fmt::Display for ServiceChannel {
 }
 
 impl From<&str> for ServiceChannel {
-    fn from(value: &str) -> Self {
-        match value {
-            _ => ServiceChannel::LTSB,
-        }
+    fn from(_value: &str) -> Self {
+        ServiceChannel::LTSB
     }
 }
 

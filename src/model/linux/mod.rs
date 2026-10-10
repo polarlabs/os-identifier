@@ -48,13 +48,13 @@ impl Linux {
 
     pub fn release(&self) -> String {
         match self {
-            Linux::Debian(linux) => String::from(linux.release()),
-            Linux::OracleLinux(linux) => String::from(linux.release()),
-            Linux::RedHatEnterpriseLinux(linux) => String::from(linux.release()),
-            Linux::Ubuntu(linux) => String::from(linux.release()),
+            Linux::Debian(linux) => linux.release(),
+            Linux::OracleLinux(linux) => linux.release(),
+            Linux::RedHatEnterpriseLinux(linux) => linux.release(),
+            Linux::Ubuntu(linux) => linux.release(),
         }
     }
-    
+
     pub fn is_enterprise(&self) -> bool {
         match self {
             Linux::Debian(linux) => linux.is_enterprise(),

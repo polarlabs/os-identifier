@@ -21,20 +21,19 @@ impl WindowsVista {
     pub(super) fn release(&self) -> String {
         self.release.to_string()
     }
-    
+
     pub(super) fn is_enterprise(&self) -> bool {
         self.editions.contains(Edition::Enterprise)
             || self.editions.contains(Edition::Enterprise64bit)
             || self.editions.contains(Edition::EnterpriseX64)
     }
-    
+
     pub(super) fn is_lts(&self) -> bool {
         self.is_enterprise()
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
@@ -43,9 +42,7 @@ impl WindowsVista {
                     self.vendor, self.product, self.release
                 )
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -54,9 +51,9 @@ impl TryFrom<&str> for WindowsVista {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
-        let parts: Vec<&str> = parts.iter().skip(1).map(|&s| s).collect();
+        let parts: Vec<&str> = parts.iter().skip(1).copied().collect();
 
-        if let Some(first) = parts.get(0) {
+        if let Some(first) = parts.first() {
             if *first != "6" {
                 Err(String::from("Not Windows Vista."))
             } else {
@@ -115,7 +112,7 @@ impl std::fmt::Display for Release {
             Release::SP2 => "SP2",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
@@ -193,7 +190,7 @@ impl std::fmt::Display for Edition {
             Edition::Ultimate64bit => "Ultimate 64-bit",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 

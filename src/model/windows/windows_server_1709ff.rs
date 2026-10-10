@@ -36,29 +36,20 @@ impl WindowsServer1709ff {
     pub(super) fn is_lts(&self) -> bool {
         self.service_channel.is_lts()
     }
-    
+
     pub(super) fn to_string(&self) -> Vec<String> {
-        let out = self
-            .editions
+        self.editions
             .0
             .iter()
             .map(|edition| {
                 if self.release.is_none() {
-                    format!(
-                        "{} {} {edition}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition}", self.vendor, self.product)
                 } else {
                     let release = self.release.clone().unwrap();
-                    format!(
-                        "{} {} {edition} {release}",
-                        self.vendor, self.product
-                    )
+                    format!("{} {} {edition} {release}", self.vendor, self.product)
                 }
             })
-            .collect();
-
-        out
+            .collect()
     }
 }
 
@@ -67,10 +58,12 @@ impl TryFrom<&str> for WindowsServer1709ff {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let parts: Vec<&str> = value.split('-').collect();
-        let parts: Vec<&str> = parts.iter().skip(2).map(|&s| s).collect();
+        let parts: Vec<&str> = parts.iter().skip(2).copied().collect();
 
-        if let Some(first) = parts.get(0) && let Some(second) = parts.get(1) {
-            if ! (*first >= "1709" && ( *second == "ac" || *second == "sac" )) {
+        if let Some(first) = parts.first()
+            && let Some(second) = parts.get(1)
+        {
+            if !(*first >= "1709" && (*second == "ac" || *second == "sac")) {
                 Err(String::from("Not Windows Server."))
             } else {
                 let vendor = VENDOR.to_string();
@@ -119,10 +112,7 @@ struct Editions(Vec<Edition>);
 
 impl Editions {
     fn all() -> Self {
-        Editions(vec![
-            Edition::Datacenter,
-            Edition::Standard,
-        ])
+        Editions(vec![Edition::Datacenter, Edition::Standard])
     }
 
     #[allow(dead_code)]
@@ -142,7 +132,7 @@ impl From<&ServiceChannel> for Editions {
             ServiceChannel::AC => {
                 let edition = Edition::Datacenter;
                 Editions(vec![edition])
-            },
+            }
             ServiceChannel::SAC => Editions::all(),
         }
     }
@@ -161,13 +151,15 @@ impl std::fmt::Display for Edition {
             Edition::Standard => "Standard",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
     AC,
+    #[default]
     SAC,
 }
 
@@ -185,12 +177,6 @@ impl ServiceChannel {
             ServiceChannel::SAC => false,
             ServiceChannel::AC => false,
         }
-    }
-}
-
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::SAC
     }
 }
 

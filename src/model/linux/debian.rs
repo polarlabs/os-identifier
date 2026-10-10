@@ -2,6 +2,7 @@ const VENDOR: &str = "Debian";
 const PRODUCT: &str = "Debian Linux";
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub(crate) struct Debian {
     vendor: String,
     product: String,
@@ -47,10 +48,7 @@ impl Debian {
     }
 
     pub(super) fn to_string(&self) -> Vec<String> {
-        vec![format!(
-            "{} {}",
-            self.product, self.release
-        )]
+        vec![format!("{} {}", self.product, self.release)]
     }
 }
 
@@ -103,6 +101,7 @@ impl Editions {
 }
 
 #[derive(PartialEq, Debug)]
+#[allow(dead_code)]
 pub(crate) enum Edition {
     Core,
     Desktop,
@@ -117,16 +116,19 @@ impl std::fmt::Display for Edition {
             Edition::Server => "Server",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     LTS,
 }
 
 impl ServiceChannel {
+    #[allow(dead_code)]
     fn is_default(&self) -> bool {
         match self {
             ServiceChannel::LTS => true,
@@ -136,12 +138,6 @@ impl ServiceChannel {
 
 impl From<&Release> for ServiceChannel {
     fn from(_: &Release) -> ServiceChannel {
-        ServiceChannel::LTS
-    }
-}
-
-impl Default for ServiceChannel {
-    fn default() -> Self {
         ServiceChannel::LTS
     }
 }

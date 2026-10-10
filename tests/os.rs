@@ -42,7 +42,9 @@ fn test_windows_11_generic_1() {
 fn test_windows_11_generic_2() {
     use os_identifier::OS;
 
-    let os = OS::parse("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)").unwrap();
+    let os =
+        OS::parse("Windows 11 Enterprise Edition (Build 26100) (64 Bit) GA (General Availability)")
+            .unwrap();
 
     assert_eq!(os.vendor(), "Microsoft".to_string());
     assert_eq!(os.product(), "Windows 11".to_string());

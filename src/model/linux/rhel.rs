@@ -2,6 +2,7 @@ const VENDOR: &str = "Red Hat";
 const PRODUCT: &str = "Red Hat Enterprise Linux";
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub(crate) struct RedHatEnterpriseLinux {
     vendor: String,
     product: String,
@@ -11,7 +12,10 @@ pub(crate) struct RedHatEnterpriseLinux {
 }
 
 impl RedHatEnterpriseLinux {
-    pub(crate) fn build(release: Release, service_channel: ServiceChannel) -> RedHatEnterpriseLinux {
+    pub(crate) fn build(
+        release: Release,
+        service_channel: ServiceChannel,
+    ) -> RedHatEnterpriseLinux {
         RedHatEnterpriseLinux {
             vendor: VENDOR.to_string(),
             product: PRODUCT.to_string(),
@@ -47,10 +51,7 @@ impl RedHatEnterpriseLinux {
     }
 
     pub(super) fn to_string(&self) -> Vec<String> {
-        vec![format!(
-            "{} {}",
-            self.product, self.release
-        )]
+        vec![format!("{} {}", self.product, self.release)]
     }
 }
 
@@ -103,6 +104,7 @@ impl Editions {
 }
 
 #[derive(PartialEq, Debug)]
+#[allow(dead_code)]
 pub(crate) enum Edition {
     Core,
     Desktop,
@@ -117,23 +119,19 @@ impl std::fmt::Display for Edition {
             Edition::Server => "Server",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     LTS,
 }
 
 impl From<&Release> for ServiceChannel {
-    fn from(value: &Release) -> ServiceChannel {
-        ServiceChannel::LTS
-    }
-}
-
-impl Default for ServiceChannel {
-    fn default() -> Self {
+    fn from(_value: &Release) -> ServiceChannel {
         ServiceChannel::LTS
     }
 }
@@ -147,8 +145,6 @@ impl std::fmt::Display for ServiceChannel {
         write!(f, "{}", out)
     }
 }
-
-
 
 #[cfg(test)]
 mod tests {
@@ -228,7 +224,10 @@ mod tests {
 
     #[test]
     fn test_from_string_arbitrary3() {
-        let label = RedHatEnterpriseLinux::try_from("Red Hat Enterprise Linux Server release 5.11 (Tikanga)").unwrap();
+        let label = RedHatEnterpriseLinux::try_from(
+            "Red Hat Enterprise Linux Server release 5.11 (Tikanga)",
+        )
+        .unwrap();
 
         assert_eq!(label.vendor, "Red Hat".to_string());
         assert_eq!(label.product, "Red Hat Enterprise Linux".to_string());

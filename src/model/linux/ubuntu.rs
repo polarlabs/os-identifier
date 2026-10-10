@@ -51,15 +51,9 @@ impl Ubuntu {
 
     pub(super) fn to_string(&self) -> Vec<String> {
         let out = if self.service_channel.is_default() {
-            format!(
-                "{} {}",
-                self.product, self.release
-            )
+            format!("{} {}", self.product, self.release)
         } else {
-            format!(
-                "{} {} {}",
-                self.product, self.release, self.service_channel
-            )
+            format!("{} {} {}", self.product, self.release, self.service_channel)
         };
 
         vec![out]
@@ -86,11 +80,7 @@ impl Release {
     fn major_is_even(&self) -> bool {
         let release: Vec<&str> = self.0.split('.').collect();
         let major = release[0];
-        if major.parse::<i32>().unwrap() % 2 == 0 {
-            true
-        } else {
-            false
-        }
+        major.parse::<i32>().unwrap() % 2 == 0
     }
 
     fn ends_with_04(&self) -> bool {
@@ -116,11 +106,7 @@ pub(crate) struct Editions(pub(crate) Vec<Edition>);
 impl Editions {
     #[allow(dead_code)]
     pub(crate) fn all() -> Self {
-        Editions(vec![
-            Edition::Core,
-            Edition::Desktop,
-            Edition::Server,
-        ])
+        Editions(vec![Edition::Core, Edition::Desktop, Edition::Server])
     }
 
     #[allow(dead_code)]
@@ -149,12 +135,14 @@ impl std::fmt::Display for Edition {
             Edition::Server => "Server",
         };
 
-        write!(f, "{}", out.to_string())
+        write!(f, "{}", out)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Default, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub(crate) enum ServiceChannel {
+    #[default]
     Interim,
     LTS,
 }
@@ -187,12 +175,6 @@ impl From<&Release> for ServiceChannel {
     }
 }
 
-impl Default for ServiceChannel {
-    fn default() -> Self {
-        ServiceChannel::Interim
-    }
-}
-
 impl std::fmt::Display for ServiceChannel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let out = match self {
@@ -203,8 +185,6 @@ impl std::fmt::Display for ServiceChannel {
         write!(f, "{}", out)
     }
 }
-
-
 
 #[cfg(test)]
 mod tests {
