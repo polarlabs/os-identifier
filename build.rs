@@ -77,8 +77,8 @@ fn run(input: &str, output: &str) -> Result<(), serde_json::Error> {
 
     // Create const declarations
     let const_declarations = [
-        const_declaration!(BUILD_TO_RELEASE_MAP = build_to_release),
-        const_declaration!(RELEASE_PATTERN = release_pattern),
+        const_declaration!(#[allow(dead_code)] BUILD_TO_RELEASE_MAP = build_to_release),
+        const_declaration!(#[allow(dead_code)] RELEASE_PATTERN = release_pattern),
     ]
     .join("\n");
 
